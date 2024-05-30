@@ -1,4 +1,4 @@
-# flutter_application_1
+# olmx_project
 
 A new Flutter project.
 
