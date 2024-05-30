@@ -1,13 +1,13 @@
-import 'package:flutter/widgets.dart';
+import 'package:flutter/material.dart';
 
 class PostingScreen extends StatefulWidget {
   const PostingScreen({super.key});
 
   @override
-  State<PostingScreen> createState() => _MyWidgetState();
+  State<PostingScreen> createState() => _PostingScreenState();
 }
 
-class _MyWidgetState extends State<PostingScreen> {
+class _PostingScreenState extends State<PostingScreen> {
   @override
   Widget build(BuildContext context) {
     return const Placeholder();

@@ -1,26 +1,43 @@
 {
   "project_info": {
-    "project_number": "720949519230",
-    "project_id": "olxm-3b58c",
-    "storage_bucket": "olxm-3b58c.appspot.com"
+    "project_number": "1070806981009",
+    "project_id": "olmx-d3797",
+    "storage_bucket": "olmx-d3797.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:720949519230:android:b600eee7b989b0cd73c92f",
+        "mobilesdk_app_id": "1:1070806981009:android:a9736d4e38fb2e828ee230",
         "android_client_info": {
-          "package_name": "com.olxm_project.app"
+          "package_name": "com.olmx_project.app"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "1070806981009-qjrk3s1cbm458deofhf3jve0k1pkgi45.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
-          "current_key": "AIzaSyCaw5zSRwDXACa_3Z5rk0-rtjh-0wqW5Og"
+          "current_key": "AIzaSyBWI7X1_bSdGlFzY1LT6jMOnrKVCmR2WWg"
         }
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1070806981009-qjrk3s1cbm458deofhf3jve0k1pkgi45.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "1070806981009-dfdtss7fj59i5jvse2vtrh7333303f6b.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.olmxProject"
+              }
+            }
+          ]
         }
       }
     }

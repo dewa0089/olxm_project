@@ -41,48 +41,50 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'AIzaSyCZ1MaRi5vyWsJ1bnpPE3sR68REzWmI7TQ',
-    appId: '1:720949519230:web:330a0b74dfdb396f73c92f',
-    messagingSenderId: '720949519230',
-    projectId: 'olxm-3b58c',
-    authDomain: 'olxm-3b58c.firebaseapp.com',
-    storageBucket: 'olxm-3b58c.appspot.com',
-    measurementId: 'G-XV5G0CMGQW',
+    apiKey: 'AIzaSyA3m9XSqBhyo8x5bgUAytQOKVFlUmhStKY',
+    appId: '1:1070806981009:web:b1a23bcb286c85428ee230',
+    messagingSenderId: '1070806981009',
+    projectId: 'olmx-d3797',
+    authDomain: 'olmx-d3797.firebaseapp.com',
+    storageBucket: 'olmx-d3797.appspot.com',
+    measurementId: 'G-E709BZPYTE',
   );
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyCaw5zSRwDXACa_3Z5rk0-rtjh-0wqW5Og',
-    appId: '1:720949519230:android:b600eee7b989b0cd73c92f',
-    messagingSenderId: '720949519230',
-    projectId: 'olxm-3b58c',
-    storageBucket: 'olxm-3b58c.appspot.com',
+    apiKey: 'AIzaSyBWI7X1_bSdGlFzY1LT6jMOnrKVCmR2WWg',
+    appId: '1:1070806981009:android:a9736d4e38fb2e828ee230',
+    messagingSenderId: '1070806981009',
+    projectId: 'olmx-d3797',
+    storageBucket: 'olmx-d3797.appspot.com',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyAU5xxNK-JWtoUgis5rwgn6q0zC_3XTs5M',
-    appId: '1:720949519230:ios:b0708929c8b7a4d873c92f',
-    messagingSenderId: '720949519230',
-    projectId: 'olxm-3b58c',
-    storageBucket: 'olxm-3b58c.appspot.com',
-    iosBundleId: 'com.example.flutterApplication1',
+    apiKey: 'AIzaSyDZdlbOlCysUhlqX45jO3pouO93TC3fvzY',
+    appId: '1:1070806981009:ios:510ab4145296dd1c8ee230',
+    messagingSenderId: '1070806981009',
+    projectId: 'olmx-d3797',
+    storageBucket: 'olmx-d3797.appspot.com',
+    iosClientId: '1070806981009-dfdtss7fj59i5jvse2vtrh7333303f6b.apps.googleusercontent.com',
+    iosBundleId: 'com.example.olmxProject',
   );
 
   static const FirebaseOptions macos = FirebaseOptions(
-    apiKey: 'AIzaSyAU5xxNK-JWtoUgis5rwgn6q0zC_3XTs5M',
-    appId: '1:720949519230:ios:b0708929c8b7a4d873c92f',
-    messagingSenderId: '720949519230',
-    projectId: 'olxm-3b58c',
-    storageBucket: 'olxm-3b58c.appspot.com',
-    iosBundleId: 'com.example.flutterApplication1',
+    apiKey: 'AIzaSyDZdlbOlCysUhlqX45jO3pouO93TC3fvzY',
+    appId: '1:1070806981009:ios:510ab4145296dd1c8ee230',
+    messagingSenderId: '1070806981009',
+    projectId: 'olmx-d3797',
+    storageBucket: 'olmx-d3797.appspot.com',
+    iosClientId: '1070806981009-dfdtss7fj59i5jvse2vtrh7333303f6b.apps.googleusercontent.com',
+    iosBundleId: 'com.example.olmxProject',
   );
 
   static const FirebaseOptions windows = FirebaseOptions(
-    apiKey: 'AIzaSyCZ1MaRi5vyWsJ1bnpPE3sR68REzWmI7TQ',
-    appId: '1:720949519230:web:f23ff9f8b3924f2973c92f',
-    messagingSenderId: '720949519230',
-    projectId: 'olxm-3b58c',
-    authDomain: 'olxm-3b58c.firebaseapp.com',
-    storageBucket: 'olxm-3b58c.appspot.com',
-    measurementId: 'G-27ZQBX32B7',
+    apiKey: 'AIzaSyA3m9XSqBhyo8x5bgUAytQOKVFlUmhStKY',
+    appId: '1:1070806981009:web:d1624cf672e8d9498ee230',
+    messagingSenderId: '1070806981009',
+    projectId: 'olmx-d3797',
+    authDomain: 'olmx-d3797.firebaseapp.com',
+    storageBucket: 'olmx-d3797.appspot.com',
+    measurementId: 'G-3ETXTZZRGH',
   );
 }

@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/screen/favorite_screen.dart';
-import 'package:flutter_application_1/screen/home_screen.dart';
-import 'package:flutter_application_1/screen/profile__screen.dart';
-import 'package:flutter_application_1/screen/sign_in_screen.dart';
+import 'package:olmx_project/screen/favorite_screen.dart';
+import 'package:olmx_project/screen/home_screen.dart';
+import 'package:olmx_project/screen/profile_screen.dart';
+import 'package:olmx_project/screen/sign_in_screen.dart';
+import 'package:olmx_project/screen/sign_up_screen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -38,7 +39,7 @@ class MyApp extends StatelessWidget {
       routes: {
         '/homescreen': (context) => const HomeScreen(),
         '/favorite': (context) => FavoriteScreen(),
-        '/signin': (context) => SignUpScreen(),
+        '/signin': (context) => SignInScreen(),
         '/signup': (context) => SignUpScreen(),
       },
     );
@@ -86,21 +87,18 @@ class _MainScreenState extends State<MainScreen> {
                 BottomNavigationBarItem(
                   icon: Icon(
                     Icons.home,
-                    color: Colors.orange,
                   ),
                   label: 'Home',
                 ),
                 BottomNavigationBarItem(
                   icon: Icon(
                     Icons.favorite,
-                    color: Colors.orange,
                   ),
                   label: 'Favorite',
                 ),
                 BottomNavigationBarItem(
                   icon: Icon(
                     Icons.add_box_outlined,
-                    color: Colors.orange,
                   ),
                   label: 'Posting',
                 ),
@@ -108,7 +106,6 @@ class _MainScreenState extends State<MainScreen> {
                 BottomNavigationBarItem(
                   icon: Icon(
                     Icons.person,
-                    color: Colors.orange,
                   ),
                   label: 'Profile',
                 )
