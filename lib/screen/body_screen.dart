@@ -10,6 +10,16 @@ class BodyScreen extends StatefulWidget {
 class _BodyScreenState extends State<BodyScreen> {
   @override
   Widget build(BuildContext context) {
-    return const Placeholder();
+    return Scaffold(
+      body: SingleChildScrollView(
+        child: Container(
+          padding: const EdgeInsets.all(5.0),
+          child: const Column(
+            children: [],
+          ),
+        ),
+      ),
+    );
+    ;
   }
 }

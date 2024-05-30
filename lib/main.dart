@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:olmx_project/screen/favorite_screen.dart';
-import 'package:olmx_project/screen/home_screen.dart';
-import 'package:olmx_project/screen/profile_screen.dart';
-import 'package:olmx_project/screen/sign_in_screen.dart';
-import 'package:olmx_project/screen/sign_up_screen.dart';
+import 'package:olxm_project/screen/favorite_screen.dart';
+import 'package:olxm_project/screen/home_screen.dart';
+import 'package:olxm_project/screen/posting_screen.dart';
+import 'package:olxm_project/screen/profile_screen.dart';
+import 'package:olxm_project/screen/sign_in_screen.dart';
+import 'package:olxm_project/screen/sign_up_screen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -59,6 +60,7 @@ class _MainScreenState extends State<MainScreen> {
   final List<Widget> _children = [
     const HomeScreen(),
     const FavoriteScreen(),
+    const PostingScreen(),
     const ProfileScreen(),
   ];
 
@@ -87,18 +89,21 @@ class _MainScreenState extends State<MainScreen> {
                 BottomNavigationBarItem(
                   icon: Icon(
                     Icons.home,
+                    color: Colors.orange,
                   ),
                   label: 'Home',
                 ),
                 BottomNavigationBarItem(
                   icon: Icon(
                     Icons.favorite,
+                    color: Colors.orange,
                   ),
                   label: 'Favorite',
                 ),
                 BottomNavigationBarItem(
                   icon: Icon(
                     Icons.add_box_outlined,
+                    color: Colors.orange,
                   ),
                   label: 'Posting',
                 ),
@@ -106,6 +111,7 @@ class _MainScreenState extends State<MainScreen> {
                 BottomNavigationBarItem(
                   icon: Icon(
                     Icons.person,
+                    color: Colors.orange,
                   ),
                   label: 'Profile',
                 )
