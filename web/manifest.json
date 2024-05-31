@@ -1,6 +1,6 @@
 {
-    "name": "olmx_project",
-    "short_name": "olmx_project",
+    "name": "olxm_project",
+    "short_name": "olxm_project",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",

@@ -90,12 +90,12 @@ BEGIN
         BLOCK "040904e4"
         BEGIN
             VALUE "CompanyName", "com.example" "\0"
-            VALUE "FileDescription", "olmx_project" "\0"
+            VALUE "FileDescription", "olxm_project" "\0"
             VALUE "FileVersion", VERSION_AS_STRING "\0"
-            VALUE "InternalName", "olmx_project" "\0"
+            VALUE "InternalName", "olxm_project" "\0"
             VALUE "LegalCopyright", "Copyright (C) 2024 com.example. All rights reserved." "\0"
-            VALUE "OriginalFilename", "olmx_project.exe" "\0"
-            VALUE "ProductName", "olmx_project" "\0"
+            VALUE "OriginalFilename", "olxm_project.exe" "\0"
+            VALUE "ProductName", "olxm_project" "\0"
             VALUE "ProductVersion", VERSION_AS_STRING "\0"
         END
     END

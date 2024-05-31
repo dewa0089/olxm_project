@@ -1,12 +1,24 @@
+import 'dart:io';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:olxm_project/firebase_options.dart';
 import 'package:olxm_project/screen/favorite_screen.dart';
 import 'package:olxm_project/screen/home_screen.dart';
 import 'package:olxm_project/screen/posting_screen.dart';
 import 'package:olxm_project/screen/profile_screen.dart';
 import 'package:olxm_project/screen/sign_in_screen.dart';
 import 'package:olxm_project/screen/sign_up_screen.dart';
+import 'package:flutter_config/flutter_config.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+  if (!kIsWeb && (Platform.isAndroid || Platform.isIOS)) {
+    await FlutterConfig.loadEnvVariables();
+  }
   runApp(const MyApp());
 }
 
@@ -35,13 +47,13 @@ class MyApp extends StatelessWidget {
         useMaterial3: true,
       ),
       // home: const MainSreen(),
-      home: MainScreen(),
+      home: const MainScreen(),
       initialRoute: '/',
       routes: {
         '/homescreen': (context) => const HomeScreen(),
-        '/favorite': (context) => FavoriteScreen(),
-        '/signin': (context) => SignInScreen(),
-        '/signup': (context) => SignUpScreen(),
+        '/favorite': (context) => const FavoriteScreen(),
+        '/signin': (context) => const SignInScreen(),
+        '/signup': (context) => const SignUpScreen(),
       },
     );
   }
