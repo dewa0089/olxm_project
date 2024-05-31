@@ -23,6 +23,6 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ),
         ),
-        body: const BodyScreen());
+        body: BodyScreen());
   }
 }

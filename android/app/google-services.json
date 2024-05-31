@@ -7,9 +7,9 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:1070806981009:android:a9736d4e38fb2e828ee230",
+        "mobilesdk_app_id": "1:1070806981009:android:454407f08e2ba3b88ee230",
         "android_client_info": {
-          "package_name": "com.olmx_project.app"
+          "package_name": "com.olxm_project"
         }
       },
       "oauth_client": [
