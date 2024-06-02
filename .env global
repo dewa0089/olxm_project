@@ -1,0 +1,3 @@
+GOOGLE_MAPS_API_KEY=AIzaSyDwdb5b9PitEk2TO-zO9Ey67hfxrGPmVPM
+
+flutter run -d chrome --web-renderer html

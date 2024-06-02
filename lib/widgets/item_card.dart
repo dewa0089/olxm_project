@@ -1,137 +1,148 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:olxm_project/screen/detail_screen.dart';
 import 'package:olxm_project/model/data.dart';
+import 'package:intl/intl.dart';
+import 'package:geocoding/geocoding.dart';
 
-class ItemCard extends StatefulWidget {
-  // TODO: 1. Deklarasi variabel yang dibutuhkan dan dipasang pada konstruktor
-  // const ItemCard({super.key, required this.shoes});
-  // final Shoes shoes;
+class ItemCard extends StatelessWidget {
+  final Data data;
 
-  @override
-  State<ItemCard> createState() => _ItemCardState();
-}
+  const ItemCard({super.key, required this.data});
 
-class _ItemCardState extends State<ItemCard> {
-  // _ItemCardState({required this.shoes});
-  // final Shoes shoes;
-  bool isFavorite = false;
-  bool isSignIn = false; // Menyimpan status sign in
-  int? _isSelectedSize;
-  @override
-  void initState() {
-    super.initState();
-    _checkSignInStatus();
-    // _loadFavoriteStatus();
+  Future<String> _getCityName(double latitude, double longitude) async {
+    try {
+      List<Placemark> placemarks =
+          await placemarkFromCoordinates(latitude, longitude);
+      if (placemarks.isNotEmpty) {
+        Placemark placemark = placemarks.first;
+        // Mencoba untuk mendapatkan nama kota dari subAdministrativeArea
+        String? cityName = placemark.subAdministrativeArea;
+        // Jika subAdministrativeArea tidak tersedia, coba gunakan locality
+        cityName ??= placemark.locality;
+        // Jika keduanya tidak tersedia, kembalikan 'Unknown'
+        return cityName ?? 'Unknown';
+      } else {
+        return 'Unknown';
+      }
+    } catch (e) {
+      // ignore: avoid_print
+      print('Error getting city name: $e');
+      return 'Unknown';
+    }
   }
-
-//Memeriksa status sign in
-  void _checkSignInStatus() async {
-    // SharedPreferences prefs = await SharedPreferences.getInstance();
-    // bool signedIn = prefs.getBool('isSignedIn') ?? false;
-    // setState(() {
-    //   isSignIn = signedIn;
-    // });
-  }
-
-  // Memeriksa status favorite
-  // void _loadFavoriteStatus() async {
-  //   SharedPreferences prefs = await SharedPreferences.getInstance();
-  //   bool favorite = prefs.getBool('favorite_${widget.shoes.id}') ?? false;
-  //   setState(() {
-  //     isFavorite = favorite;
-  //   });
-  // }
-
-  // Future<void> _toggleFavorite() async {
-  //   SharedPreferences prefs = await SharedPreferences.getInstance();
-
-  //   if (!isSignIn) {
-  //     //jika belum sign in, diarahkan ke Sign In Screen
-  //     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-  //       Navigator.pushReplacementNamed(context, '/signin');
-  //     });
-  //     return;
-  //   }
-
-  //   bool favoriteStatus = !isFavorite;
-  //   prefs.setBool('favorite_${widget.shoes.id}', favoriteStatus);
-  //   // Tambahkan pemanggilan untuk memperbarui tampilan Favorit
-  //   _loadFavoriteStatus();
-
-  //   setState(() {
-  //     isFavorite = favoriteStatus;
-  //   });
-  // }
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
-      onTap: () {
-        // Navigator.push(
-        //     context,
-        //     MaterialPageRoute(
-        //         builder: (context) => DetailScreen(shoes: widget.shoes)));
-      },
-      child: Card(
-        // TODO: 2. Tetapkan parameter shape, margin, dan elevation
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-        margin: EdgeInsets.all(12),
-        color: Colors.blue,
-        elevation: 1,
+    // Format the price in Rupiah
+    final NumberFormat currencyFormatter =
+        NumberFormat.currency(locale: 'id_ID', symbol: 'Rp ', decimalDigits: 0);
+
+    return Card(
+      margin: const EdgeInsets.all(8), // Margin between cards
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: InkWell(
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => DetailScreen(
+                data: data,
+              ),
+            ),
+          );
+        },
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            // TODO: 3. Buat Images sebagai anak dari Column
+            data.imageUrl != null && Uri.parse(data.imageUrl!).isAbsolute
+                ? ClipRRect(
+                    borderRadius: const BorderRadius.only(
+                      topLeft: Radius.circular(16),
+                      topRight: Radius.circular(16),
+                    ),
+                    child: CachedNetworkImage(
+                      imageUrl: data.imageUrl!,
+                      fit: BoxFit.cover,
+                      alignment: Alignment.center,
+                      width: double.infinity,
+                      height: 110,
+                      placeholder: (context, url) => const Center(
+                        child: CircularProgressIndicator(),
+                      ),
+                      errorWidget: (context, url, error) => const Center(
+                        child: Icon(Icons.error),
+                      ),
+                    ),
+                  )
+                : Container(
+                    height: 150,
+                    decoration: BoxDecoration(
+                      color: Colors.grey[300],
+                      borderRadius: const BorderRadius.only(
+                        topLeft: Radius.circular(16),
+                        topRight: Radius.circular(16),
+                      ),
+                    ),
+                    child: const Center(
+                      child: Icon(Icons.image_not_supported),
+                    ),
+                  ),
             Expanded(
-              child: Hero(
-                // tag: 'item_card_${widget.shoes.id}_${widget.shoes.model}',
-                tag: categories,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    RotationTransition(
-                        turns: AlwaysStoppedAnimation(-20 / 360),
-                        child: Container(
-                            width: 100, height: 170, child: Image.asset(
-                                // widget.shoes.imageAsset,
-                                'assets/image/benner1.jfif'))),
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 40, right: 8),
-                      child: IconButton(
-                          onPressed: () {
-                            // _toggleFavorite();
+                    Text(
+                      currencyFormatter.format(data.harga),
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      data.name,
+                      style: const TextStyle(
+                        fontSize: 16,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Row(
+                      children: [
+                        const Icon(
+                          Icons.location_on_sharp,
+                          size: 15,
+                        ),
+                        FutureBuilder<String>(
+                          future: _getCityName(
+                              data.latitude ?? 0.0, data.longitude ?? 0.0),
+                          builder: (context, snapshot) {
+                            if (snapshot.connectionState ==
+                                ConnectionState.waiting) {
+                              return const CircularProgressIndicator();
+                            } else if (snapshot.hasError) {
+                              return const Text('Error');
+                            } else {
+                              return Text(
+                                snapshot.data ?? 'Unknown',
+                                style: const TextStyle(
+                                  fontSize: 12,
+                                  color: Colors.grey,
+                                ),
+                              );
+                            }
                           },
-                          icon: Icon(
-                            isSignIn && isFavorite
-                                ? Icons.favorite
-                                : Icons.favorite_border,
-                            color: isSignIn && isFavorite ? Colors.red : null,
-                            size: 30,
-                          )),
+                        ),
+                      ],
                     ),
                   ],
                 ),
               ),
             ),
-            //TODO: 4. Buat Text sebagai anak dari column
-            Padding(
-              padding: const EdgeInsets.only(left: 16, bottom: 8),
-              child: Text(
-                // widget.shoes.name,
-                'Nama',
-                style:
-                    const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-              ),
-            ),
-            //TODO: 5. Buat Text sebagai anak dari column
-            Padding(
-              padding: const EdgeInsets.only(left: 16, bottom: 8),
-              child: Text(
-                // "\$${widget.shoes.price.toStringAsFixed(2)}",
-                'Harga',
-                style:
-                    const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-              ),
-            )
           ],
         ),
       ),

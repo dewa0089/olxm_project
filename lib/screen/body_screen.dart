@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:olxm_project/model/data.dart';
 import 'package:olxm_project/screen/search_screen.dart';
+import 'package:olxm_project/services/data_services.dart';
 import 'package:olxm_project/widgets/item_card.dart';
 
 List<IconData> categoryIcons = [
@@ -92,7 +93,7 @@ class _BodyState extends State<Body> {
       child: Container(
         width: width,
         height: height / 4, // Sesuaikan tinggi sesuai kebutuhan
-        margin: EdgeInsets.symmetric(vertical: 10),
+        margin: const EdgeInsets.symmetric(vertical: 10),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(20),
           color: Colors.orange,
@@ -106,7 +107,7 @@ class _BodyState extends State<Body> {
   }
 
 // Top Categories Widget Components
-  topCategoriesWidget(width, height) {
+  topCategoriesWidget(double width, double height) {
     return Column(
       children: [
         const Row(
@@ -114,7 +115,7 @@ class _BodyState extends State<Body> {
             Padding(
               padding: EdgeInsets.all(10.0),
               child: Text(
-                'Categori',
+                'Category',
               ),
             ),
           ],
@@ -124,7 +125,7 @@ class _BodyState extends State<Body> {
             Container(
               padding: const EdgeInsets.all(10),
               width: width,
-              height: height / 10,
+              height: height / 8,
               child: ListView.builder(
                 physics: const BouncingScrollPhysics(),
                 itemCount: categories.length + 1,
@@ -156,7 +157,7 @@ class _BodyState extends State<Body> {
                           child: Column(
                             children: [
                               Icon(
-                                Icons.category, // Ikon untuk 'All'
+                                Icons.category,
                                 color: selectedIndexOfCategory == 0
                                     ? Colors.white
                                     : Colors.black,
@@ -324,20 +325,48 @@ class _BodyState extends State<Body> {
 
 // Last Categories Widget Components
   lastCategoriesWidget(width, height) {
-    return Container(
+    return SizedBox(
       width: width,
-      height: height / 3,
-      child: GridView.builder(
-          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 2),
-          padding: const EdgeInsets.all(10),
-          physics: BouncingScrollPhysics(),
-          // itemCount: shoesList.length,
-          scrollDirection: Axis.vertical,
-          itemBuilder: (ctx, index) {
-            // Shoes shoes = shoesList[index];
-            return ItemCard();
-          }),
+      child: StreamBuilder<List<Data>>(
+        stream: DataServices.getDataList(),
+        builder: (context, snapshot) {
+          if (snapshot.hasError) {
+            return Text('Error: ${snapshot.error}');
+          }
+          switch (snapshot.connectionState) {
+            case ConnectionState.waiting:
+              return const Center(
+                child: CircularProgressIndicator(),
+              );
+            default:
+              if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                return const Center(
+                  child: Text('No data available'),
+                );
+              }
+              final filteredData = filterDataByCategory(
+                  snapshot.data!, selectedCategory); // Filter data
+              return Column(
+                children: [
+                  GridView.count(
+                    crossAxisCount: 2,
+                    mainAxisSpacing: 10,
+                    crossAxisSpacing: 10,
+                    childAspectRatio: 0.75,
+                    shrinkWrap:
+                        true, // Membuat GridView sesuai dengan kontennya
+                    physics:
+                        const NeverScrollableScrollPhysics(), // Disable scroll
+                    padding: const EdgeInsets.all(10),
+                    children: List.generate(filteredData.length, (index) {
+                      return ItemCard(data: filteredData[index]);
+                    }),
+                  ),
+                ],
+              );
+          }
+        },
+      ),
     );
   }
 }
