@@ -55,8 +55,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
         DateTime dateOfBirth = userData['dateOfBirth'].toDate();
         _dateController.text = "${dateOfBirth.toLocal()}".split(' ')[0];
         String newName = userData['name'];
+        String? newImageURL = userData['image_url']; // Added imageURL
         setState(() {
           _nameController.text = newName;
+          _imageURL = newImageURL; // Update _imageURL with new value
         });
       }
     } catch (error) {

@@ -252,7 +252,7 @@ class _DetailScreenState extends State<DetailScreen> {
                             return AlertDialog(
                               title: const Text('Konfirmasi Hapus'),
                               content: Text(
-                                  'Yakin ingin menghapus data \'${widget.data.product}\' ?'),
+                                  'Yakin ingin menghapus product yang anda jual dengan nama: \'${widget.data.product}\' ?'),
                               actions: <Widget>[
                                 TextButton(
                                   child: const Text('Cancel'),

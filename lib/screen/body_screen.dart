@@ -111,7 +111,7 @@ class _BodyState extends State<Body> {
             Padding(
               padding: EdgeInsets.all(10.0),
               child: Text(
-                'Category',
+                'Category Product:',
               ),
             ),
           ],
@@ -280,7 +280,7 @@ class _BodyState extends State<Body> {
         const Padding(
           padding: EdgeInsets.only(left: 7, top: 7),
           child: Text(
-            "Sell Or Buy Products",
+            "Sell Or Buy Product",
             style: TextStyle(
               fontSize: 30,
               fontWeight: FontWeight.bold,
