@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
@@ -120,6 +121,15 @@ class _PostingScreenState extends State<PostingScreen> {
       print('Error parsing harga: $e');
       return null;
     }
+  }
+
+  // Tambahkan Firebase Auth
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+
+  // Metode untuk mendapatkan userId saat memposting
+  Future<String?> _getUserId() async {
+    User? user = _auth.currentUser;
+    return user?.uid;
   }
 
   @override
@@ -321,6 +331,9 @@ class _PostingScreenState extends State<PostingScreen> {
                         return;
                       }
 
+                      // Dapatkan userId saat memposting
+                      String? userId = await _getUserId();
+
                       Data data = Data(
                         id: widget.data?.id,
                         product: _nameController.text,
@@ -334,6 +347,7 @@ class _PostingScreenState extends State<PostingScreen> {
                         longitude: _selectedLocation?.longitude,
                         createdAt: widget.data?.createdAt ?? Timestamp.now(),
                         updatedAt: Timestamp.now(),
+                        userId: userId,
                       );
 
                       if (widget.data == null) {

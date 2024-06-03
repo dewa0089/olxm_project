@@ -1,12 +1,16 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:olxm_project/screen/sign_in_screen.dart';
+import 'package:olxm_project/model/theme.dart';
+import 'package:provider/provider.dart';
 
 class ProfileScreen extends StatefulWidget {
   final String name;
   final String email;
   final String password;
   final DateTime dateOfBirth;
+  final String? imageURL; // Tambahkan imageURL sebagai parameter opsional
 
   const ProfileScreen({
     Key? key,
@@ -14,6 +18,7 @@ class ProfileScreen extends StatefulWidget {
     required this.email,
     required this.password,
     required this.dateOfBirth,
+    this.imageURL, // Tambahkan imageURL sebagai parameter opsional
   }) : super(key: key);
 
   @override
@@ -25,7 +30,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   late final TextEditingController _emailController;
   late final TextEditingController _dateController;
   late final TextEditingController _passwordController;
-  String _selectedTheme = 'Light';
+  String? _imageURL; // Buat variabel state untuk menyimpan imageURL
 
   @override
   void initState() {
@@ -35,6 +40,29 @@ class _ProfileScreenState extends State<ProfileScreen> {
     _passwordController = TextEditingController(text: widget.password);
     _dateController = TextEditingController(
         text: "${widget.dateOfBirth.toLocal()}".split(' ')[0]);
+    _imageURL = widget.imageURL;
+    _fetchUserData();
+  }
+
+  Future<void> _fetchUserData() async {
+    try {
+      User? user = FirebaseAuth.instance.currentUser;
+      DocumentSnapshot userDoc = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(user!.uid)
+          .get();
+      if (userDoc.exists) {
+        Map<String, dynamic> userData = userDoc.data() as Map<String, dynamic>;
+        DateTime dateOfBirth = userData['dateOfBirth'].toDate();
+        _dateController.text = "${dateOfBirth.toLocal()}".split(' ')[0];
+        String newName = userData['name'];
+        setState(() {
+          _nameController.text = newName;
+        });
+      }
+    } catch (error) {
+      print('Error fetching user data: $error');
+    }
   }
 
   Future<void> _selectDate(BuildContext context) async {
@@ -43,23 +71,45 @@ class _ProfileScreenState extends State<ProfileScreen> {
       initialDate = DateTime.tryParse(_dateController.text) ?? DateTime.now();
     }
 
-    final DateTime? picked = await showDatePicker(
+    final picked = await showDatePicker(
       context: context,
       initialDate: initialDate,
       firstDate: DateTime(1900),
       lastDate: DateTime.now(),
     );
+
     if (picked != null) {
       setState(() {
         _dateController.text = "${picked.toLocal()}".split(' ')[0];
       });
+
+      // Update tanggal lahir di Firebase Firestore
+      try {
+        User? user = FirebaseAuth.instance.currentUser;
+        await FirebaseFirestore.instance
+            .collection('users')
+            .doc(user!.uid)
+            .update({'dateOfBirth': picked});
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Tanggal lahir berhasil diperbarui'),
+            backgroundColor: Colors.green,
+          ),
+        );
+      } catch (error) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Gagal memperbarui tanggal lahir: $error'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
     }
   }
 
   Future<void> _changePassword(BuildContext context) async {
     TextEditingController oldPasswordController = TextEditingController();
     TextEditingController newPasswordController = TextEditingController();
-
     await showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -125,8 +175,77 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
+  Future<void> _changeName(BuildContext context) async {
+    TextEditingController newNameController = TextEditingController();
+    await showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Change Name'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                controller: newNameController,
+                decoration: const InputDecoration(labelText: 'New Name'),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text('Cancel'),
+            ),
+            ElevatedButton(
+              onPressed: () async {
+                String newName = newNameController.text;
+
+                try {
+                  User? user = FirebaseAuth.instance.currentUser;
+                  // Update name in Firebase Authentication
+                  await user!.updateDisplayName(newName);
+
+                  // Update name in Firebase Firestore (if necessary)
+                  await FirebaseFirestore.instance
+                      .collection('users')
+                      .doc(user.uid)
+                      .update({'name': newName});
+
+                  // Update name displayed on the screen
+                  setState(() {
+                    _nameController.text = newName;
+                  });
+
+                  Navigator.of(context).pop(); // Close dialog
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Name updated successfully'),
+                      backgroundColor: Colors.green,
+                    ),
+                  );
+                } catch (error) {
+                  Navigator.of(context).pop(); // Close dialog
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('Failed to Update Name: $error'),
+                      backgroundColor: Colors.red,
+                    ),
+                  );
+                }
+              },
+              child: const Text('Change'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    final themeNotifier = Provider.of<ThemeNotifier>(context);
     return Scaffold(
       appBar: AppBar(
         title: const Text('Profile'),
@@ -135,23 +254,29 @@ class _ProfileScreenState extends State<ProfileScreen> {
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
-            const Center(
+            Center(
               child: CircleAvatar(
                 radius: 70,
-                backgroundImage: NetworkImage(
-                    'https://tse1.mm.bing.net/th?id=OIP.F4hNpdgapQWM6TbvukUp9QHaE8&pid=Api&P=0&h=180l'),
+                backgroundImage: _imageURL != null
+                    ? NetworkImage(
+                        _imageURL!) // Gunakan imageURL untuk menampilkan gambar
+                    : null, // Atau null jika imageURL tidak tersedia
               ),
             ),
-            SizedBox(
-              height: 70,
-            ),
+            const SizedBox(height: 70),
             TextField(
               controller: _nameController,
-              decoration: const InputDecoration(
+              decoration: InputDecoration(
                 labelText: 'Name',
                 border: OutlineInputBorder(),
-                suffixIcon: Icon(Icons.edit),
+                suffixIcon: GestureDetector(
+                  onTap: () {
+                    _changeName(context);
+                  },
+                  child: Icon(Icons.edit),
+                ),
               ),
+              readOnly: true,
             ),
             const SizedBox(height: 35.0),
             TextField(
@@ -180,18 +305,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ),
             const SizedBox(height: 35.0),
             DropdownButtonFormField<String>(
-              value: _selectedTheme,
+              value: themeNotifier.isDarkMode ? 'Dark' : 'Light',
               items: ['Light', 'Dark'].map((String theme) {
                 return DropdownMenuItem<String>(
                   value: theme,
-                  child: Text(theme), // Corrected here
+                  child: Text(theme),
                 );
               }).toList(),
               onChanged: (String? newValue) {
-                setState(() {
-                  _selectedTheme = newValue!;
-                  // Change the theme of the app here if needed
-                });
+                if (newValue != null) {
+                  themeNotifier.setTheme(newValue == 'Dark');
+                }
               },
               decoration: const InputDecoration(
                 labelText: 'Theme',
@@ -204,27 +328,25 @@ class _ProfileScreenState extends State<ProfileScreen> {
               obscureText: true,
               decoration: InputDecoration(
                 labelText: 'Password',
-                border: OutlineInputBorder(),
+                border: const OutlineInputBorder(),
                 suffixIcon: IconButton(
                   onPressed: () {
                     _changePassword(context);
                   },
-                  icon: Icon(Icons.edit),
+                  icon: const Icon(Icons.edit),
                 ),
               ),
               readOnly: true,
             ),
-            SizedBox(
-              height: 20.0,
-            ),
+            const SizedBox(height: 20.0),
             ElevatedButton(
               child: const Text(
                 'Logout',
                 style: TextStyle(color: Colors.black),
               ),
               style: ElevatedButton.styleFrom(
-                minimumSize:
-                    Size(200, 40), // Atur ukuran minimum sesuai kebutuhan Anda
+                minimumSize: const Size(
+                    200, 40), // Atur ukuran minimum sesuai kebutuhan Anda
               ),
               onPressed: () {
                 FirebaseAuth.instance.signOut().then(

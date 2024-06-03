@@ -17,18 +17,19 @@ List<Data> filterDataByCategory(List<Data> dataList, String category) {
 }
 
 class Data {
-  String? id;
+  final String? id;
   final String product;
   final double harga;
   final String nomor;
   final String category;
   final String address;
   final String description;
-  String? imageUrl;
-  double? latitude;
-  double? longitude;
-  Timestamp? createdAt;
-  Timestamp? updatedAt;
+  final String? imageUrl;
+  final double? latitude;
+  final double? longitude;
+  final Timestamp? createdAt;
+  final Timestamp? updatedAt;
+  final String? userId; // Added userId
 
   Data({
     this.id,
@@ -43,39 +44,43 @@ class Data {
     this.longitude,
     this.createdAt,
     this.updatedAt,
+    this.userId, // Initialize userId
   });
 
-  factory Data.fromDocument(DocumentSnapshot doc) {
-    Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+  // Tambahkan userId ke metode fromMap dan toMap
+  factory Data.fromMap(Map<String, dynamic> map) {
     return Data(
-      id: doc.id,
-      product: data['product'],
-      harga: (data['harga'] as num).toDouble(),
-      nomor: data['nomor'],
-      category: data['category'],
-      address: data['address'],
-      description: data['description'],
-      imageUrl: data['image_url'],
-      latitude: data['latitude']?.toDouble(),
-      longitude: data['longitude']?.toDouble(),
-      createdAt: data['created_at'] as Timestamp?,
-      updatedAt: data['updated_at'] as Timestamp?,
+      id: map['id'] as String?,
+      product: map['product'] as String,
+      harga: (map['harga'] as num).toDouble(),
+      nomor: map['nomor'] as String,
+      address: map['address'] as String,
+      category: map['category'] as String,
+      description: map['description'] as String,
+      imageUrl: map['image_url'] as String?,
+      latitude: map['latitude'] != null ? map['latitude'] as double : null,
+      longitude: map['longitude'] != null ? map['longitude'] as double : null,
+      createdAt: map['created_at'] as Timestamp?,
+      updatedAt: map['updated_at'] as Timestamp?,
+      userId: map['userId'] as String?, // Get userId
     );
   }
 
-  Map<String, dynamic> toDocument() {
+  Map<String, dynamic> toMap() {
     return {
-      'name': product,
+      'id': id,
+      'product': product,
       'harga': harga,
       'nomor': nomor,
-      'category': category,
       'address': address,
+      'category': category,
       'description': description,
       'image_url': imageUrl,
       'latitude': latitude,
       'longitude': longitude,
       'created_at': createdAt,
       'updated_at': updatedAt,
+      'userId': userId, // Save userId
     };
   }
 }

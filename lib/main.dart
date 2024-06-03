@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -10,6 +11,9 @@ import 'package:olxm_project/screen/profile_screen.dart';
 import 'package:olxm_project/screen/sign_in_screen.dart';
 import 'package:olxm_project/screen/sign_up_screen.dart';
 import 'package:flutter_config/flutter_config.dart';
+import 'package:olxm_project/model/theme.dart';
+import 'package:provider/provider.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -19,7 +23,12 @@ void main() async {
   if (!kIsWeb && (Platform.isAndroid || Platform.isIOS)) {
     await FlutterConfig.loadEnvVariables();
   }
-  runApp(const MyApp());
+  runApp(
+    ChangeNotifierProvider(
+      create: (_) => ThemeNotifier(),
+      child: MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -27,10 +36,64 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final themeNotifier = Provider.of<ThemeNotifier>(context);
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'OLXM',
-      home: const SignInScreen(),
+      theme: ThemeData.light(),
+      darkTheme: ThemeData.dark(),
+      themeMode: themeNotifier.currentTheme,
+      home: StreamBuilder<User?>(
+        stream: FirebaseAuth.instance
+            .authStateChanges(), // Mendengarkan perubahan status otentikasi
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Center(
+                child:
+                    CircularProgressIndicator()); // Tampilkan loading indicator selama pengecekan status otentikasi
+          } else {
+            if (snapshot.hasData && snapshot.data != null) {
+              // Jika pengguna sudah login sebelumnya, ambil data dari Firestore dan arahkan ke layar utama aplikasi
+              return FutureBuilder<DocumentSnapshot>(
+                future: FirebaseFirestore.instance
+                    .collection('users')
+                    .doc(snapshot.data!.uid)
+                    .get(),
+                builder: (context, userSnapshot) {
+                  if (userSnapshot.connectionState == ConnectionState.waiting) {
+                    return Center(
+                        child:
+                            CircularProgressIndicator()); // Tampilkan loading indicator selama pengambilan data pengguna
+                  } else if (userSnapshot.hasError) {
+                    return Center(
+                        child: Text(
+                            'Error: ${userSnapshot.error}')); // Tampilkan pesan kesalahan jika ada
+                  } else {
+                    var userData =
+                        userSnapshot.data?.data() as Map<String, dynamic>;
+                    String name = userData['name'];
+                    String email = snapshot.data!.email!;
+                    String password =
+                        'password'; // Anda mungkin ingin menyembunyikan atau mengelola ini secara berbeda
+                    DateTime dateOfBirth =
+                        (userData['dateOfBirth'] as Timestamp).toDate();
+
+                    return MainScreen(
+                      name: name,
+                      email: email,
+                      password: password,
+                      dateOfBirth: dateOfBirth,
+                    );
+                  }
+                },
+              );
+            } else {
+              // Jika pengguna belum login atau sudah keluar dari sesi, arahkan ke layar masuk
+              return SignInScreen();
+            }
+          }
+        },
+      ),
       initialRoute: '/',
       routes: {
         '/homescreen': (context) => const HomeScreen(),

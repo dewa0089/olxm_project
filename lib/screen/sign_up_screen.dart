@@ -1,6 +1,10 @@
+import 'dart:io';
+
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:olxm_project/main.dart';
 
 class SignUpScreen extends StatefulWidget {
@@ -16,6 +20,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
   final TextEditingController _passwordController = TextEditingController();
   DateTime? _selectedDate;
   bool _isPasswordVisible = false;
+  File? _imageFile;
+  String? _imageURL; // Variable to store image URL
 
   Future<void> _selectDate(BuildContext context) async {
     final DateTime? pickedDate = await showDatePicker(
@@ -31,6 +37,33 @@ class _SignUpScreenState extends State<SignUpScreen> {
     }
   }
 
+  Future<void> _pickImage() async {
+    final pickedFile =
+        await ImagePicker().pickImage(source: ImageSource.gallery);
+    if (pickedFile != null) {
+      setState(() {
+        _imageFile = File(pickedFile.path);
+      });
+
+      // Upload image to Firebase Storage
+      try {
+        TaskSnapshot snapshot = await FirebaseStorage.instance
+            .ref('user_profile_images/${pickedFile.name}')
+            .putFile(File(pickedFile.path));
+
+        // Get image URL from Firebase Storage
+        String imageURL = await snapshot.ref.getDownloadURL();
+
+        // Set the imageURL to be saved in Firestore
+        setState(() {
+          _imageURL = imageURL;
+        });
+      } catch (error) {
+        print('Failed to upload image: $error');
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -43,6 +76,57 @@ class _SignUpScreenState extends State<SignUpScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              Align(
+                alignment: Alignment.topCenter,
+                child: Padding(
+                  padding: const EdgeInsets.only(),
+                  child: Stack(
+                    alignment: Alignment.bottomRight,
+                    children: [
+                      Container(
+                        clipBehavior: Clip.antiAlias,
+                        decoration: BoxDecoration(
+                          border: Border.all(
+                            color: Colors.blue,
+                            width: 2,
+                          ),
+                          shape: BoxShape.circle,
+                        ),
+                        child: CircleAvatar(
+                          radius: 80,
+                          backgroundColor: Colors.transparent,
+                          child: ClipOval(
+                            child: _imageFile != null
+                                ? Image.file(
+                                    _imageFile!,
+                                    fit: BoxFit.cover,
+                                    width: double.infinity,
+                                    height: double.infinity,
+                                  )
+                                : (_imageURL != null
+                                    ? Image.network(
+                                        _imageURL!,
+                                        fit: BoxFit.cover,
+                                        width: double.infinity,
+                                        height: double.infinity,
+                                      )
+                                    : Container()),
+                          ),
+                        ),
+                      ),
+                      Positioned(
+                        right: 0,
+                        bottom: 0,
+                        child: IconButton(
+                          onPressed: _pickImage,
+                          icon: Icon(Icons.camera_alt,
+                              color: Colors.deepPurple[50]),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
               const Text(
                 'Name',
                 style: TextStyle(
@@ -148,6 +232,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
                             'email': _emailController.text,
                             'password': _passwordController.text,
                             'dateOfBirth': _selectedDate,
+                            'image_url':
+                                _imageURL, // Save image URL to Firestore
                           });
 
                           // Navigate to MainScreen after successful signup

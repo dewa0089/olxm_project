@@ -52,6 +52,7 @@ dependencies:
   intl: ^0.17.0
   geocoding: ^3.0.0
   shared_preferences: ^2.2.2
+  provider: ^6.1.2
 
 
 dev_dependencies:

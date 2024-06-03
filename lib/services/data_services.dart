@@ -48,8 +48,15 @@ class DataServices {
       'longitude': data.longitude,
       'created_at': FieldValue.serverTimestamp(),
       'updated_at': FieldValue.serverTimestamp(),
+      'userId': data.userId, // Corrected userId access
     };
-    await _dataCollection.add(newData);
+
+    try {
+      await _dataCollection.add(newData);
+    } catch (e) {
+      // Handle error
+      print('Error adding data: $e');
+    }
   }
 
   static Future<void> updateData(Data data) async {
@@ -65,17 +72,34 @@ class DataServices {
       'longitude': data.longitude,
       'created_at': data.createdAt,
       'updated_at': FieldValue.serverTimestamp(),
+      'userId': data.userId,
     };
 
-    await _dataCollection.doc(data.id).update(updatedData);
+    try {
+      await _dataCollection.doc(data.id).update(updatedData);
+    } catch (e) {
+      // Handle error
+      print('Error updating data: $e');
+    }
   }
 
   static Future<void> deleteData(Data data) async {
-    await _dataCollection.doc(data.id).delete();
+    try {
+      await _dataCollection.doc(data.id).delete();
+    } catch (e) {
+      // Handle error
+      print('Error deleting data: $e');
+    }
   }
 
-  static Future<QuerySnapshot> retrieveData() {
-    return _dataCollection.get();
+  static Future<QuerySnapshot> retrieveData() async {
+    try {
+      return await _dataCollection.get();
+    } catch (e) {
+      // Handle error
+      print('Error retrieving data: $e');
+      rethrow;
+    }
   }
 
   static Stream<List<Data>> getDataList() {
@@ -105,6 +129,7 @@ class DataServices {
           updatedAt: data['updated_at'] != null
               ? data['updated_at'] as Timestamp
               : null,
+          userId: data['userId'] as String?,
         );
       }).toList();
     });

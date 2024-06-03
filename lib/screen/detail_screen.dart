@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:olxm_project/model/data.dart';
@@ -18,11 +19,19 @@ class DetailScreen extends StatefulWidget {
 
 class _DetailScreenState extends State<DetailScreen> {
   bool isFavorite = false;
-
+  String? currentUserId;
   @override
   void initState() {
     super.initState();
     _loadFavoriteStatus();
+    _getCurrentUserId();
+  }
+
+  Future<void> _getCurrentUserId() async {
+    User? user = FirebaseAuth.instance.currentUser;
+    setState(() {
+      currentUserId = user?.uid;
+    });
   }
 
   void _loadFavoriteStatus() async {
@@ -129,49 +138,49 @@ class _DetailScreenState extends State<DetailScreen> {
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  InkWell(
-                    onTap: () {
-                      showDialog(
-                        context: context,
-                        builder: (BuildContext context) {
-                          return AlertDialog(
-                            title: const Text('Konfirmasi Hapus'),
-                            content: Text(
-                                'Yakin ingin menghapus data \'${widget.data.product}\' ?'),
-                            actions: <Widget>[
-                              TextButton(
-                                child: const Text('Cancel'),
-                                onPressed: () {
-                                  Navigator.of(context).pop();
-                                },
-                              ),
-                              TextButton(
-                                child: const Text('Hapus'),
-                                onPressed: () {
-                                  DataServices.deleteData(widget.data)
-                                      .whenComplete(() => Navigator.push(
-                                            // ignore: use_build_context_synchronously
-                                            context,
-                                            MaterialPageRoute(
-                                              builder: (context) =>
-                                                  PostingScreen(),
-                                            ),
-                                          ));
-                                },
-                              ),
-                            ],
-                          );
-                        },
-                      );
-                    },
-                    child: const Padding(
-                      padding: EdgeInsets.symmetric(vertical: 10),
-                      child: Icon(
-                        Icons.delete,
-                        size: 30,
+                  if (widget.data.userId == currentUserId)
+                    InkWell(
+                      onTap: () {
+                        showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return AlertDialog(
+                              title: const Text('Konfirmasi Hapus'),
+                              content: Text(
+                                  'Yakin ingin menghapus data \'${widget.data.product}\' ?'),
+                              actions: <Widget>[
+                                TextButton(
+                                  child: const Text('Cancel'),
+                                  onPressed: () {
+                                    Navigator.of(context).pop();
+                                  },
+                                ),
+                                TextButton(
+                                  child: const Text('Hapus'),
+                                  onPressed: () {
+                                    DataServices.deleteData(widget.data)
+                                        .whenComplete(() => Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder: (context) =>
+                                                    PostingScreen(),
+                                              ),
+                                            ));
+                                  },
+                                ),
+                              ],
+                            );
+                          },
+                        );
+                      },
+                      child: const Padding(
+                        padding: EdgeInsets.symmetric(vertical: 10),
+                        child: Icon(
+                          Icons.delete,
+                          size: 30,
+                        ),
                       ),
                     ),
-                  ),
                 ],
               ),
             ),

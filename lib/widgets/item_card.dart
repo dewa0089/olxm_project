@@ -78,7 +78,7 @@ class ItemCard extends StatelessWidget {
                     ),
                   )
                 : Container(
-                    height: 150,
+                    height: 110,
                     decoration: BoxDecoration(
                       color: Colors.grey[300],
                       borderRadius: const BorderRadius.only(
