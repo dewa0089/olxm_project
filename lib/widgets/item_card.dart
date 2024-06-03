@@ -105,7 +105,7 @@ class ItemCard extends StatelessWidget {
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      data.name,
+                      data.product,
                       style: const TextStyle(
                         fontSize: 16,
                       ),

@@ -35,7 +35,7 @@ class _PostingScreenState extends State<PostingScreen> {
   void initState() {
     super.initState();
     if (widget.data != null) {
-      _nameController.text = widget.data!.name;
+      _nameController.text = widget.data!.product;
       _hargaController.text = currencyFormatter.format(widget.data!.harga);
       _nomorController.text = widget.data!.nomor;
       _selectedCategory = widget.data!.category;
@@ -213,8 +213,9 @@ class _PostingScreenState extends State<PostingScreen> {
                   decoration: const InputDecoration(
                     border: OutlineInputBorder(),
                   ),
-                  keyboardType:
-                      TextInputType.number, // Tipe keyboard untuk input angka
+                  controller: _nomorController,
+                  keyboardType: TextInputType
+                      .phone, // Tipe keyboard untuk input nomor telepon
                   inputFormatters: <TextInputFormatter>[
                     FilteringTextInputFormatter
                         .digitsOnly // Hanya menerima digit
@@ -322,7 +323,7 @@ class _PostingScreenState extends State<PostingScreen> {
 
                       Data data = Data(
                         id: widget.data?.id,
-                        name: _nameController.text,
+                        product: _nameController.text,
                         harga: harga,
                         nomor: _nomorController.text,
                         address: _addressController.text,

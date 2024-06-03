@@ -1,18 +1,41 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:olxm_project/screen/sign_in_screen.dart';
 
 class ProfileScreen extends StatefulWidget {
-  const ProfileScreen({super.key});
+  final String name;
+  final String email;
+  final String password;
+  final DateTime dateOfBirth;
+
+  const ProfileScreen({
+    Key? key,
+    required this.name,
+    required this.email,
+    required this.password,
+    required this.dateOfBirth,
+  }) : super(key: key);
 
   @override
   State<ProfileScreen> createState() => _ProfileScreenState();
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
-  final _nameController = TextEditingController();
-  final _emailController = TextEditingController();
-  final _passwordController = TextEditingController();
-  final _dateController = TextEditingController();
+  late final TextEditingController _nameController;
+  late final TextEditingController _emailController;
+  late final TextEditingController _dateController;
+  late final TextEditingController _passwordController;
   String _selectedTheme = 'Light';
+
+  @override
+  void initState() {
+    super.initState();
+    _nameController = TextEditingController(text: widget.name);
+    _emailController = TextEditingController(text: widget.email);
+    _passwordController = TextEditingController(text: widget.password);
+    _dateController = TextEditingController(
+        text: "${widget.dateOfBirth.toLocal()}".split(' ')[0]);
+  }
 
   Future<void> _selectDate(BuildContext context) async {
     DateTime initialDate = DateTime.now();
@@ -23,8 +46,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
     final DateTime? picked = await showDatePicker(
       context: context,
       initialDate: initialDate,
-      firstDate: DateTime(2000),
-      lastDate: DateTime(2101),
+      firstDate: DateTime(1900),
+      lastDate: DateTime.now(),
     );
     if (picked != null) {
       setState(() {
@@ -33,108 +56,188 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
   }
 
+  Future<void> _changePassword(BuildContext context) async {
+    TextEditingController oldPasswordController = TextEditingController();
+    TextEditingController newPasswordController = TextEditingController();
+
+    await showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Change Password'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                controller: oldPasswordController,
+                decoration: const InputDecoration(labelText: 'Old Password'),
+                obscureText: true,
+              ),
+              TextField(
+                controller: newPasswordController,
+                decoration: const InputDecoration(labelText: 'New Password'),
+                obscureText: true,
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text('Cancel'),
+            ),
+            ElevatedButton(
+              onPressed: () async {
+                String oldPassword = oldPasswordController.text;
+                String newPassword = newPasswordController.text;
+
+                try {
+                  User? user = FirebaseAuth.instance.currentUser;
+                  // Re-authenticate user with their old password
+                  AuthCredential credential = EmailAuthProvider.credential(
+                      email: user!.email!, password: oldPassword);
+                  await user.reauthenticateWithCredential(credential);
+                  // Change password
+                  await user.updatePassword(newPassword);
+                  Navigator.of(context).pop(); // Close dialog
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Password updated successfully'),
+                      backgroundColor: Colors.green,
+                    ),
+                  );
+                } catch (error) {
+                  Navigator.of(context).pop(); // Close dialog
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('Failed to update password: $error'),
+                      backgroundColor: Colors.red,
+                    ),
+                  );
+                }
+              },
+              child: const Text('Change'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          'Your Profile',
-          textAlign: TextAlign.center,
-        ),
+        title: const Text('Profile'),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16),
-        child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Center(
-                child: CircleAvatar(
-                  radius: 70,
-                  backgroundImage: NetworkImage(
-                      'https://tse1.mm.bing.net/th?id=OIP.F4hNpdgapQWM6TbvukUp9QHaE8&pid=Api&P=0&h=180l'),
-                ),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          children: [
+            const Center(
+              child: CircleAvatar(
+                radius: 70,
+                backgroundImage: NetworkImage(
+                    'https://tse1.mm.bing.net/th?id=OIP.F4hNpdgapQWM6TbvukUp9QHaE8&pid=Api&P=0&h=180l'),
               ),
-              const SizedBox(height: 32),
-              const Text('Name'),
-              TextField(
-                controller: _nameController,
-                decoration: const InputDecoration(
-                  hintText: 'Name',
-                  border: OutlineInputBorder(),
-                  suffixIcon: Icon(Icons.edit),
-                ),
+            ),
+            SizedBox(
+              height: 70,
+            ),
+            TextField(
+              controller: _nameController,
+              decoration: const InputDecoration(
+                labelText: 'Name',
+                border: OutlineInputBorder(),
+                suffixIcon: Icon(Icons.edit),
               ),
-              const SizedBox(height: 16),
-              const Text('Email'),
-              TextField(
-                controller: _emailController,
-                decoration: const InputDecoration(
-                  hintText: 'Email',
-                  border: OutlineInputBorder(),
-                  suffixIcon: Icon(Icons.edit),
-                ),
+            ),
+            const SizedBox(height: 35.0),
+            TextField(
+              controller: _emailController,
+              decoration: const InputDecoration(
+                labelText: 'Email',
+                border: OutlineInputBorder(),
               ),
-              const SizedBox(height: 16),
-              const Text('Password'),
-              TextField(
-                controller: _passwordController,
-                decoration: const InputDecoration(
-                  hintText: 'Password',
-                  border: OutlineInputBorder(),
-                  suffixIcon: Icon(Icons.edit),
-                ),
-              ),
-              const SizedBox(height: 16),
-              const Text('Date Of Birth'),
-              TextField(
-                controller: _dateController,
-                decoration: InputDecoration(
-                  suffixIcon: IconButton(
-                    icon: const Icon(Icons.calendar_today),
-                    onPressed: () {
-                      _selectDate(context);
-                    },
-                  ),
-                  border: const OutlineInputBorder(),
-                ),
-              ),
-              const SizedBox(height: 16),
-              const Text('Theme'),
-              DropdownButtonFormField<String>(
-                value: _selectedTheme,
-                items: ['Light', 'Dark'].map((String theme) {
-                  return DropdownMenuItem<String>(
-                    value: theme,
-                    child: Text(theme), // Corrected here
-                  );
-                }).toList(),
-                onChanged: (String? newValue) {
-                  setState(() {
-                    _selectedTheme = newValue!;
-                    // Change the theme of the app here if needed
-                  });
-                },
-                decoration: const InputDecoration(
-                  border: OutlineInputBorder(),
-                ),
-              ),
-              const SizedBox(height: 16),
-              SizedBox(
-                width: double.infinity,
-                child: Align(
-                  alignment: Alignment.center,
-                  child: ElevatedButton(
-                    onPressed: () {},
-                    style: ElevatedButton.styleFrom(
-                      padding: const EdgeInsets.all(15),
-                    ),
-                    child: const Text('Logout'),
+              readOnly: true,
+            ),
+            const SizedBox(height: 35.0),
+            GestureDetector(
+              onTap: () {
+                _selectDate(context);
+              },
+              child: AbsorbPointer(
+                child: TextField(
+                  controller: _dateController,
+                  decoration: const InputDecoration(
+                    labelText: 'Date of Birth',
+                    suffixIcon: Icon(Icons.calendar_today),
+                    border: OutlineInputBorder(),
                   ),
                 ),
               ),
-            ],
-          ),
+            ),
+            const SizedBox(height: 35.0),
+            DropdownButtonFormField<String>(
+              value: _selectedTheme,
+              items: ['Light', 'Dark'].map((String theme) {
+                return DropdownMenuItem<String>(
+                  value: theme,
+                  child: Text(theme), // Corrected here
+                );
+              }).toList(),
+              onChanged: (String? newValue) {
+                setState(() {
+                  _selectedTheme = newValue!;
+                  // Change the theme of the app here if needed
+                });
+              },
+              decoration: const InputDecoration(
+                labelText: 'Theme',
+                border: OutlineInputBorder(),
+              ),
+            ),
+            const SizedBox(height: 35.0),
+            TextField(
+              controller: _passwordController,
+              obscureText: true,
+              decoration: InputDecoration(
+                labelText: 'Password',
+                border: OutlineInputBorder(),
+                suffixIcon: IconButton(
+                  onPressed: () {
+                    _changePassword(context);
+                  },
+                  icon: Icon(Icons.edit),
+                ),
+              ),
+              readOnly: true,
+            ),
+            SizedBox(
+              height: 20.0,
+            ),
+            ElevatedButton(
+              child: const Text(
+                'Logout',
+                style: TextStyle(color: Colors.black),
+              ),
+              style: ElevatedButton.styleFrom(
+                minimumSize:
+                    Size(200, 40), // Atur ukuran minimum sesuai kebutuhan Anda
+              ),
+              onPressed: () {
+                FirebaseAuth.instance.signOut().then(
+                  (value) {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => SignInScreen()));
+                  },
+                );
+              },
+            ),
+          ],
         ),
       ),
     );

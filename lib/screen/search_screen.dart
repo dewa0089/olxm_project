@@ -36,8 +36,8 @@ class _SearchScreenState extends State<SearchScreen> {
     } else {
       setState(() {
         _filteredData = _dataList
-            .where(
-                (data) => data.name.toLowerCase().contains(query.toLowerCase()))
+            .where((data) =>
+                data.product.toLowerCase().contains(query.toLowerCase()))
             .toList();
       });
     }
@@ -83,7 +83,11 @@ class _SearchScreenState extends State<SearchScreen> {
             Expanded(
               child: GridView.builder(
                 gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2),
+                  crossAxisCount: 2,
+                  mainAxisSpacing: 10,
+                  crossAxisSpacing: 10,
+                  childAspectRatio: 0.75,
+                ),
                 itemCount: _filteredData.length,
                 itemBuilder: (context, index) {
                   final data = _filteredData[index];

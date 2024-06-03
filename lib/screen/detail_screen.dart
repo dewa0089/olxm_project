@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:olxm_project/model/data.dart';
 import 'package:olxm_project/screen/google_maps.dart';
+import 'package:olxm_project/screen/posting_screen.dart';
+import 'package:olxm_project/services/data_services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -58,21 +60,13 @@ class _DetailScreenState extends State<DetailScreen> {
     });
   }
 
-  void _launchWhatsApp() async {
-    String url = 'https://wa.me/${widget.data.nomor.replaceAll('0', '62')}';
-    // ignore: deprecated_member_use
-    if (await canLaunch(url)) {
-      // ignore: deprecated_member_use
-      await launch(url);
-    } else {
-      throw 'Could not launch $url';
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     final NumberFormat currencyFormatter =
         NumberFormat.currency(locale: 'id_ID', symbol: 'Rp ', decimalDigits: 0);
+
+    final Uri whatsapp = Uri.parse('https://wa.me/62${widget.data.nomor}');
+
     return Scaffold(
       body: SingleChildScrollView(
         child: Column(
@@ -93,9 +87,7 @@ class _DetailScreenState extends State<DetailScreen> {
                     ),
                   ),
                   IconButton(
-                    onPressed: () {
-                      _toggleFavorite();
-                    },
+                    onPressed: _toggleFavorite,
                     icon: Icon(
                       isFavorite ? Icons.favorite : Icons.favorite_border,
                       color: isFavorite ? Colors.red : null,
@@ -126,14 +118,58 @@ class _DetailScreenState extends State<DetailScreen> {
                     ),
             ),
             Padding(
-              padding: const EdgeInsets.only(left: 8),
+              padding: const EdgeInsets.only(left: 8, right: 18),
               child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
                     currencyFormatter.format(widget.data.harga),
                     style: const TextStyle(
                       fontSize: 30,
                       fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  InkWell(
+                    onTap: () {
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return AlertDialog(
+                            title: const Text('Konfirmasi Hapus'),
+                            content: Text(
+                                'Yakin ingin menghapus data \'${widget.data.product}\' ?'),
+                            actions: <Widget>[
+                              TextButton(
+                                child: const Text('Cancel'),
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                },
+                              ),
+                              TextButton(
+                                child: const Text('Hapus'),
+                                onPressed: () {
+                                  DataServices.deleteData(widget.data)
+                                      .whenComplete(() => Navigator.push(
+                                            // ignore: use_build_context_synchronously
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (context) =>
+                                                  PostingScreen(),
+                                            ),
+                                          ));
+                                },
+                              ),
+                            ],
+                          );
+                        },
+                      );
+                    },
+                    child: const Padding(
+                      padding: EdgeInsets.symmetric(vertical: 10),
+                      child: Icon(
+                        Icons.delete,
+                        size: 30,
+                      ),
                     ),
                   ),
                 ],
@@ -144,7 +180,7 @@ class _DetailScreenState extends State<DetailScreen> {
               child: Row(
                 children: [
                   Text(
-                    widget.data.name,
+                    widget.data.product,
                     style: const TextStyle(
                       fontSize: 28,
                     ),
@@ -239,7 +275,13 @@ class _DetailScreenState extends State<DetailScreen> {
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: ElevatedButton(
-                onPressed: _launchWhatsApp,
+                onPressed: () async {
+                  if (await launchUrl(whatsapp)) {
+                    print('launched url');
+                  } else {
+                    print('could not launch url');
+                  }
+                },
                 style: ElevatedButton.styleFrom(
                   minimumSize: const Size(300, 50),
                   backgroundColor: Colors.blue,

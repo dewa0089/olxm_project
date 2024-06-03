@@ -29,8 +29,8 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Shoes Shop',
-      home: const MainScreen(),
+      title: 'OLXM',
+      home: const SignInScreen(),
       initialRoute: '/',
       routes: {
         '/homescreen': (context) => const HomeScreen(),
@@ -43,30 +43,49 @@ class MyApp extends StatelessWidget {
 }
 
 class MainScreen extends StatefulWidget {
-  const MainScreen({super.key});
+  final String name;
+  final String email;
+  final String password;
+  final DateTime dateOfBirth;
+
+  const MainScreen({
+    Key? key,
+    required this.name,
+    required this.email,
+    required this.password,
+    required this.dateOfBirth,
+  }) : super(key: key);
 
   @override
   State<MainScreen> createState() => _MainScreenState();
 }
 
 class _MainScreenState extends State<MainScreen> {
-  // Deklarasikan variable
   int _currentIndex = 0;
-  final List<Widget> _children = [
-    const HomeScreen(),
-    const FavoriteScreen(),
-    const PostingScreen(),
-    const ProfileScreen(),
-  ];
+
+  late final List<Widget> _children;
+
+  @override
+  void initState() {
+    super.initState();
+    _children = [
+      const HomeScreen(),
+      const FavoriteScreen(),
+      const PostingScreen(),
+      ProfileScreen(
+        name: widget.name,
+        email: widget.email,
+        password: widget.password,
+        dateOfBirth: widget.dateOfBirth,
+      ),
+    ];
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // Buat properti body berupa widget yang ditampilkan
       body: _children[_currentIndex],
-      // Buat properti bottomNavigasiBar dengan nilai Theme
       bottomNavigationBar: Theme(
-        // Buat data dan child dari Theme
         data: Theme.of(context).copyWith(canvasColor: Colors.deepPurple[50]),
         child: BottomNavigationBar(
           selectedItemColor: Colors.black,
@@ -79,7 +98,6 @@ class _MainScreenState extends State<MainScreen> {
             });
           },
           items: const [
-            // Home
             BottomNavigationBarItem(
               icon: Icon(Icons.home),
               label: 'Home',
@@ -92,7 +110,6 @@ class _MainScreenState extends State<MainScreen> {
               icon: Icon(Icons.add_box_outlined),
               label: 'Posting',
             ),
-            // Profile
             BottomNavigationBarItem(
               icon: Icon(Icons.person),
               label: 'Profile',

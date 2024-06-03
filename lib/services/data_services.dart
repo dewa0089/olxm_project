@@ -37,7 +37,7 @@ class DataServices {
 
   static Future<void> addData(Data data) async {
     Map<String, dynamic> newData = {
-      'name': data.name,
+      'product': data.product,
       'harga': data.harga,
       'nomor': data.nomor,
       'category': data.category,
@@ -54,7 +54,7 @@ class DataServices {
 
   static Future<void> updateData(Data data) async {
     Map<String, dynamic> updatedData = {
-      'name': data.name,
+      'product': data.product,
       'harga': data.harga,
       'nomor': data.nomor,
       'category': data.category,
@@ -88,7 +88,7 @@ class DataServices {
         Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
         return Data(
           id: doc.id,
-          name: data['name'],
+          product: data['product'],
           harga: (data['harga'] as num).toDouble(),
           nomor: data['nomor'],
           category: data['category'],

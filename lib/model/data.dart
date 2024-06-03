@@ -18,7 +18,7 @@ List<Data> filterDataByCategory(List<Data> dataList, String category) {
 
 class Data {
   String? id;
-  final String name;
+  final String product;
   final double harga;
   final String nomor;
   final String category;
@@ -32,7 +32,7 @@ class Data {
 
   Data({
     this.id,
-    required this.name,
+    required this.product,
     required this.harga,
     required this.nomor,
     required this.category,
@@ -49,7 +49,7 @@ class Data {
     Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
     return Data(
       id: doc.id,
-      name: data['name'],
+      product: data['product'],
       harga: (data['harga'] as num).toDouble(),
       nomor: data['nomor'],
       category: data['category'],
@@ -65,7 +65,7 @@ class Data {
 
   Map<String, dynamic> toDocument() {
     return {
-      'name': name,
+      'name': product,
       'harga': harga,
       'nomor': nomor,
       'category': category,
