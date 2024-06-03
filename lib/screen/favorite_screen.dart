@@ -35,7 +35,26 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Favorite Items'),
+        elevation: 0,
+        backgroundColor: Colors.deepPurple[100],
+        title: Padding(
+          padding: const EdgeInsets.all(5),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Text(
+                "Favorite Items",
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 23),
+              ),
+              Image.asset(
+                "assets/image/logo.png",
+                width: 55.0,
+                height: 55.0,
+                fit: BoxFit.fill,
+              ),
+            ],
+          ),
+        ),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),

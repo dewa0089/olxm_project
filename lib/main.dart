@@ -44,16 +44,12 @@ class MyApp extends StatelessWidget {
       darkTheme: ThemeData.dark(),
       themeMode: themeNotifier.currentTheme,
       home: StreamBuilder<User?>(
-        stream: FirebaseAuth.instance
-            .authStateChanges(), // Mendengarkan perubahan status otentikasi
+        stream: FirebaseAuth.instance.authStateChanges(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(
-                child:
-                    CircularProgressIndicator()); // Tampilkan loading indicator selama pengecekan status otentikasi
+            return Center(child: CircularProgressIndicator());
           } else {
             if (snapshot.hasData && snapshot.data != null) {
-              // Jika pengguna sudah login sebelumnya, ambil data dari Firestore dan arahkan ke layar utama aplikasi
               return FutureBuilder<DocumentSnapshot>(
                 future: FirebaseFirestore.instance
                     .collection('users')
@@ -61,20 +57,15 @@ class MyApp extends StatelessWidget {
                     .get(),
                 builder: (context, userSnapshot) {
                   if (userSnapshot.connectionState == ConnectionState.waiting) {
-                    return Center(
-                        child:
-                            CircularProgressIndicator()); // Tampilkan loading indicator selama pengambilan data pengguna
+                    return Center(child: CircularProgressIndicator());
                   } else if (userSnapshot.hasError) {
-                    return Center(
-                        child: Text(
-                            'Error: ${userSnapshot.error}')); // Tampilkan pesan kesalahan jika ada
+                    return Center(child: Text('Error: ${userSnapshot.error}'));
                   } else {
                     var userData =
                         userSnapshot.data?.data() as Map<String, dynamic>;
                     String name = userData['name'];
                     String email = snapshot.data!.email!;
-                    String password =
-                        'password'; // Anda mungkin ingin menyembunyikan atau mengelola ini secara berbeda
+                    String password = 'password';
                     DateTime dateOfBirth =
                         (userData['dateOfBirth'] as Timestamp).toDate();
 
@@ -88,7 +79,6 @@ class MyApp extends StatelessWidget {
                 },
               );
             } else {
-              // Jika pengguna belum login atau sudah keluar dari sesi, arahkan ke layar masuk
               return SignInScreen();
             }
           }

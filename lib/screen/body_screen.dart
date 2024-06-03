@@ -253,7 +253,7 @@ class _BodyState extends State<Body> {
               width: double.infinity,
               height: 40,
               decoration: BoxDecoration(
-                color: Colors.grey.shade300,
+                color: Colors.deepPurple[50],
                 borderRadius: BorderRadius.circular(30),
                 boxShadow: const [
                   BoxShadow(
@@ -269,7 +269,7 @@ class _BodyState extends State<Body> {
                     padding: EdgeInsets.symmetric(horizontal: 16.0),
                     child: Icon(
                       Icons.search,
-                      color: Colors.orange,
+                      color: Colors.black,
                     ),
                   ),
                 ],
