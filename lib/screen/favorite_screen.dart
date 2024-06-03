@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:olxm_project/model/data.dart';
 import 'package:olxm_project/widgets/item_card.dart';
-import 'package:olxm_project/services/data_services.dart'; // Import DataServices
+import 'package:olxm_project/services/data_services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class FavoriteScreen extends StatefulWidget {
@@ -12,7 +12,6 @@ class FavoriteScreen extends StatefulWidget {
 }
 
 class _FavoriteScreenState extends State<FavoriteScreen> {
-  final TextEditingController _searchController = TextEditingController();
   late List<Data> favoriteData = [];
 
   @override
@@ -43,17 +42,6 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            TextField(
-              controller: _searchController,
-              onChanged: (value) {
-                // Implement search functionality here if needed
-              },
-              decoration: const InputDecoration(
-                hintText: 'Search',
-                border: OutlineInputBorder(),
-                suffixIcon: Icon(Icons.search),
-              ),
-            ),
             const SizedBox(height: 20),
             const Text(
               'Your Favorite Items:',
@@ -67,9 +55,9 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
                 crossAxisSpacing: 10,
                 childAspectRatio: 0.7,
               ),
-              itemCount: favoriteData.length, // Use filtered data length
+              itemCount: favoriteData.length,
               itemBuilder: (ctx, index) {
-                return ItemCard(data: favoriteData[index]); // Use filtered data
+                return ItemCard(data: favoriteData[index]);
               },
             )),
           ],

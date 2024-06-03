@@ -11,8 +11,7 @@ List<IconData> categoryIcons = [
   Icons.laptop,
   Icons.tablet,
   Icons.tv,
-  Icons.games_outlined
-  // tambahkan ikon lain sesuai jumlah kategori
+  Icons.games_outlined,
 ];
 
 class Body extends StatefulWidget {
@@ -23,7 +22,7 @@ class Body extends StatefulWidget {
 }
 
 class _BodyState extends State<Body> {
-  String selectedCategory = 'All'; // Default category is 'All'
+  String selectedCategory = 'All';
   int selectedIndexOfCategory = 0;
   int selectedIndexOfFeatured = 1;
   PageController _pageController = PageController();
@@ -32,8 +31,7 @@ class _BodyState extends State<Body> {
   @override
   void initState() {
     super.initState();
-    // Timer untuk auto slide
-    _timer = Timer.periodic(Duration(seconds: 3), (Timer timer) {
+    _timer = Timer.periodic(Duration(seconds: 5), (Timer timer) {
       int nextPage = _pageController.page!.round() + 1;
       if (nextPage == 3) {
         nextPage = 0;
@@ -74,31 +72,30 @@ class _BodyState extends State<Body> {
   Widget bannerWidget(double width, double height) {
     return Container(
       width: width,
-      height: height / 4, // Sesuaikan tinggi sesuai kebutuhan
+      height: height / 3.2,
       child: PageView(
         controller: _pageController,
         children: [
-          bannerItem(width, height, 'assets/image/benner1.jfif'),
-          bannerItem(width, height, 'assets/image/benner2.png'),
-          bannerItem(width, height, 'assets/image/benner3.jfif'),
+          bannerItem(width, height, 'assets/image/2.png'),
+          bannerItem(width, height, 'assets/image/3.png'),
+          bannerItem(width, height, 'assets/image/4.png'),
         ],
       ),
     );
   }
 
-  // Widget untuk setiap item Banner
   Widget bannerItem(double width, double height, String imagePath) {
     return Padding(
       padding: const EdgeInsets.all(10.0),
       child: Container(
         width: width,
-        height: height / 4, // Sesuaikan tinggi sesuai kebutuhan
+        height: height / 4,
         margin: const EdgeInsets.symmetric(vertical: 10),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(20),
           color: Colors.orange,
           image: DecorationImage(
-            image: AssetImage(imagePath), // Path ke gambar banner Anda
+            image: AssetImage(imagePath),
             fit: BoxFit.cover,
           ),
         ),
@@ -106,7 +103,6 @@ class _BodyState extends State<Body> {
     );
   }
 
-// Top Categories Widget Components
   topCategoriesWidget(double width, double height) {
     return Column(
       children: [
@@ -254,11 +250,11 @@ class _BodyState extends State<Body> {
                       builder: (context) => const SearchScreen()));
             },
             child: Container(
-              width: double.infinity, // Membuat container mengambil lebar penuh
-              height: 40, // Tinggi container
+              width: double.infinity,
+              height: 40,
               decoration: BoxDecoration(
-                color: Colors.grey.shade300, // Warna latar belakang
-                borderRadius: BorderRadius.circular(30), // Sudut melengkung
+                color: Colors.grey.shade300,
+                borderRadius: BorderRadius.circular(30),
                 boxShadow: const [
                   BoxShadow(
                     color: Colors.black26,
@@ -273,7 +269,7 @@ class _BodyState extends State<Body> {
                     padding: EdgeInsets.symmetric(horizontal: 16.0),
                     child: Icon(
                       Icons.search,
-                      color: Colors.orange, // Warna ikon
+                      color: Colors.orange,
                     ),
                   ),
                 ],
@@ -305,7 +301,6 @@ class _BodyState extends State<Body> {
     );
   }
 
-// More Text Widget Components
   moreTextWidget() {
     return Container(
       margin: EdgeInsets.symmetric(horizontal: 20),
@@ -323,7 +318,6 @@ class _BodyState extends State<Body> {
     );
   }
 
-// Last Categories Widget Components
   lastCategoriesWidget(width, height) {
     return SizedBox(
       width: width,
@@ -344,8 +338,8 @@ class _BodyState extends State<Body> {
                   child: Text('No data available'),
                 );
               }
-              final filteredData = filterDataByCategory(
-                  snapshot.data!, selectedCategory); // Filter data
+              final filteredData =
+                  filterDataByCategory(snapshot.data!, selectedCategory);
               return Column(
                 children: [
                   GridView.count(
@@ -353,10 +347,8 @@ class _BodyState extends State<Body> {
                     mainAxisSpacing: 10,
                     crossAxisSpacing: 10,
                     childAspectRatio: 0.75,
-                    shrinkWrap:
-                        true, // Membuat GridView sesuai dengan kontennya
-                    physics:
-                        const NeverScrollableScrollPhysics(), // Disable scroll
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
                     padding: const EdgeInsets.all(10),
                     children: List.generate(filteredData.length, (index) {
                       return ItemCard(data: filteredData[index]);

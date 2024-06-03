@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:olxm_project/model/data.dart'; // Import DataList
+import 'package:olxm_project/model/data.dart';
 import 'package:olxm_project/widgets/item_card.dart';
-import 'package:olxm_project/services/data_services.dart'; // Import DataServices
+import 'package:olxm_project/services/data_services.dart';
 
 class SearchScreen extends StatefulWidget {
   const SearchScreen({super.key});
@@ -11,7 +11,7 @@ class SearchScreen extends StatefulWidget {
 }
 
 class _SearchScreenState extends State<SearchScreen> {
-  late Stream<List<Data>> _dataListStream; // Aliran data list dari Firestore
+  late Stream<List<Data>> _dataListStream;
   List<Data> _dataList = [];
   List<Data> _filteredData = [];
   final TextEditingController _searchController = TextEditingController();
@@ -27,11 +27,10 @@ class _SearchScreenState extends State<SearchScreen> {
     });
   }
 
-  // Fungsi untuk melakukan filter berdasarkan teks yang dimasukkan
   void filterSearchResults(String query) {
     if (query.isEmpty) {
       setState(() {
-        _filteredData.clear(); // Mengosongkan data terfilter jika query kosong
+        _filteredData.clear();
       });
     } else {
       setState(() {
@@ -61,7 +60,6 @@ class _SearchScreenState extends State<SearchScreen> {
               child: TextField(
                 controller: _searchController,
                 onChanged: (value) {
-                  // Panggil fungsi filter setiap kali nilai diubah
                   filterSearchResults(value);
                 },
                 autofocus: false,
@@ -78,8 +76,7 @@ class _SearchScreenState extends State<SearchScreen> {
               ),
             ),
           ),
-          if (_searchController
-              .text.isNotEmpty) // Tampilkan hanya jika TextField terisi
+          if (_searchController.text.isNotEmpty)
             Expanded(
               child: GridView.builder(
                 gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(

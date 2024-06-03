@@ -10,7 +10,7 @@ class ProfileScreen extends StatefulWidget {
   final String email;
   final String password;
   final DateTime dateOfBirth;
-  final String? imageURL; // Tambahkan imageURL sebagai parameter opsional
+  final String? imageURL;
 
   const ProfileScreen({
     Key? key,
@@ -18,7 +18,7 @@ class ProfileScreen extends StatefulWidget {
     required this.email,
     required this.password,
     required this.dateOfBirth,
-    this.imageURL, // Tambahkan imageURL sebagai parameter opsional
+    this.imageURL,
   }) : super(key: key);
 
   @override
@@ -30,8 +30,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   late final TextEditingController _emailController;
   late final TextEditingController _dateController;
   late final TextEditingController _passwordController;
-  String? _imageURL; // Buat variabel state untuk menyimpan imageURL
-
+  String? _imageURL;
   @override
   void initState() {
     super.initState();
@@ -83,7 +82,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
         _dateController.text = "${picked.toLocal()}".split(' ')[0];
       });
 
-      // Update tanggal lahir di Firebase Firestore
       try {
         User? user = FirebaseAuth.instance.currentUser;
         await FirebaseFirestore.instance
@@ -144,13 +142,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
                 try {
                   User? user = FirebaseAuth.instance.currentUser;
-                  // Re-authenticate user with their old password
+
                   AuthCredential credential = EmailAuthProvider.credential(
                       email: user!.email!, password: oldPassword);
                   await user.reauthenticateWithCredential(credential);
-                  // Change password
+
                   await user.updatePassword(newPassword);
-                  Navigator.of(context).pop(); // Close dialog
+                  Navigator.of(context).pop();
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
                       content: Text('Password updated successfully'),
@@ -158,7 +156,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     ),
                   );
                 } catch (error) {
-                  Navigator.of(context).pop(); // Close dialog
+                  Navigator.of(context).pop();
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
                       content: Text('Failed to update password: $error'),
@@ -204,21 +202,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
                 try {
                   User? user = FirebaseAuth.instance.currentUser;
-                  // Update name in Firebase Authentication
+
                   await user!.updateDisplayName(newName);
 
-                  // Update name in Firebase Firestore (if necessary)
                   await FirebaseFirestore.instance
                       .collection('users')
                       .doc(user.uid)
                       .update({'name': newName});
 
-                  // Update name displayed on the screen
                   setState(() {
                     _nameController.text = newName;
                   });
 
-                  Navigator.of(context).pop(); // Close dialog
+                  Navigator.of(context).pop();
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
                       content: Text('Name updated successfully'),
@@ -226,7 +222,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     ),
                   );
                 } catch (error) {
-                  Navigator.of(context).pop(); // Close dialog
+                  Navigator.of(context).pop();
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
                       content: Text('Failed to Update Name: $error'),
@@ -257,10 +253,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
             Center(
               child: CircleAvatar(
                 radius: 70,
-                backgroundImage: _imageURL != null
-                    ? NetworkImage(
-                        _imageURL!) // Gunakan imageURL untuk menampilkan gambar
-                    : null, // Atau null jika imageURL tidak tersedia
+                backgroundImage:
+                    _imageURL != null ? NetworkImage(_imageURL!) : null,
               ),
             ),
             const SizedBox(height: 70),
@@ -345,8 +339,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 style: TextStyle(color: Colors.black),
               ),
               style: ElevatedButton.styleFrom(
-                minimumSize: const Size(
-                    200, 40), // Atur ukuran minimum sesuai kebutuhan Anda
+                minimumSize: const Size(200, 40),
               ),
               onPressed: () {
                 FirebaseAuth.instance.signOut().then(

@@ -29,7 +29,6 @@ class DataServices {
       String downloadUrl = await taskSnapshot.ref.getDownloadURL();
       return downloadUrl;
     } catch (e) {
-      // ignore: avoid_print
       print('Error uploading image: $e');
       return null;
     }
@@ -48,13 +47,12 @@ class DataServices {
       'longitude': data.longitude,
       'created_at': FieldValue.serverTimestamp(),
       'updated_at': FieldValue.serverTimestamp(),
-      'userId': data.userId, // Corrected userId access
+      'userId': data.userId,
     };
 
     try {
       await _dataCollection.add(newData);
     } catch (e) {
-      // Handle error
       print('Error adding data: $e');
     }
   }
@@ -78,7 +76,6 @@ class DataServices {
     try {
       await _dataCollection.doc(data.id).update(updatedData);
     } catch (e) {
-      // Handle error
       print('Error updating data: $e');
     }
   }
@@ -87,7 +84,6 @@ class DataServices {
     try {
       await _dataCollection.doc(data.id).delete();
     } catch (e) {
-      // Handle error
       print('Error deleting data: $e');
     }
   }
@@ -96,7 +92,6 @@ class DataServices {
     try {
       return await _dataCollection.get();
     } catch (e) {
-      // Handle error
       print('Error retrieving data: $e');
       rethrow;
     }
@@ -104,8 +99,7 @@ class DataServices {
 
   static Stream<List<Data>> getDataList() {
     return _dataCollection
-        .orderBy('created_at',
-            descending: true) // Order by created_at in descending order
+        .orderBy('created_at', descending: true)
         .snapshots()
         .map((snapshot) {
       return snapshot.docs.map((doc) {

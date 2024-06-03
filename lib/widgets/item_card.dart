@@ -16,17 +16,16 @@ class ItemCard extends StatelessWidget {
           await placemarkFromCoordinates(latitude, longitude);
       if (placemarks.isNotEmpty) {
         Placemark placemark = placemarks.first;
-        // Mencoba untuk mendapatkan nama kota dari subAdministrativeArea
+
         String? cityName = placemark.subAdministrativeArea;
-        // Jika subAdministrativeArea tidak tersedia, coba gunakan locality
+
         cityName ??= placemark.locality;
-        // Jika keduanya tidak tersedia, kembalikan 'Unknown'
+
         return cityName ?? 'Unknown';
       } else {
         return 'Unknown';
       }
     } catch (e) {
-      // ignore: avoid_print
       print('Error getting city name: $e');
       return 'Unknown';
     }
@@ -34,12 +33,11 @@ class ItemCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Format the price in Rupiah
     final NumberFormat currencyFormatter =
         NumberFormat.currency(locale: 'id_ID', symbol: 'Rp ', decimalDigits: 0);
 
     return Card(
-      margin: const EdgeInsets.all(8), // Margin between cards
+      margin: const EdgeInsets.all(8),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),
       ),

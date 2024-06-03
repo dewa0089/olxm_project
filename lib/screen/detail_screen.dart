@@ -79,7 +79,9 @@ class _DetailScreenState extends State<DetailScreen> {
   Future<void> _loadComments() async {
     _commentService.getComments().listen((comments) {
       setState(() {
-        _comments = comments;
+        _comments = comments
+            .where((comment) => comment.productId == widget.data.id)
+            .toList();
       });
     });
   }
@@ -87,7 +89,12 @@ class _DetailScreenState extends State<DetailScreen> {
   Future<void> _addComment() async {
     final User? user = FirebaseAuth.instance.currentUser;
     if (user != null && _commentController.text.isNotEmpty) {
-      await _commentService.addComment(user.uid, _commentController.text);
+      final productId = widget.data.id!;
+      await _commentService.addComment(
+        user.uid,
+        _commentController.text,
+        productId,
+      );
       _commentController.clear();
     }
   }
@@ -100,46 +107,77 @@ class _DetailScreenState extends State<DetailScreen> {
     final Uri whatsapp = Uri.parse('https://wa.me/62${widget.data.nomor}');
 
     Widget _buildComments() {
-      return Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const SizedBox(height: 20),
-          Text(
-            'Comments',
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+      return Container(
+        decoration: BoxDecoration(
+          border: Border.all(
+            color: Colors.grey,
+            width: 1.0,
           ),
-          const SizedBox(height: 10),
-          ListView.builder(
-            shrinkWrap: true,
-            itemCount: _comments.length,
-            itemBuilder: (context, index) {
-              final comment = _comments[index];
-              return ListTile(
-                title: Text(comment.text),
-                subtitle: FutureBuilder<DocumentSnapshot>(
-                  future: FirebaseFirestore.instance
-                      .collection('users')
-                      .doc(comment.userId)
-                      .get(),
-                  builder: (context, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return const SizedBox();
-                    }
-                    if (snapshot.hasData) {
-                      final userData =
-                          snapshot.data!.data() as Map<String, dynamic>;
-                      final userName = userData['name'];
-                      return Text('By: $userName');
-                    }
-                    return const SizedBox();
+          borderRadius: BorderRadius.circular(8.0),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const SizedBox(height: 20),
+            Padding(
+              padding: const EdgeInsets.only(right: 120),
+              child: Container(
+                height: MediaQuery.of(context).size.height * 0.4,
+                child: ListView.builder(
+                  itemCount: _comments.length,
+                  itemBuilder: (context, index) {
+                    final comment = _comments[index];
+                    return ListTile(
+                      title: Text(comment.text),
+                      subtitle: FutureBuilder<DocumentSnapshot>(
+                        future: FirebaseFirestore.instance
+                            .collection('users')
+                            .doc(comment.userId)
+                            .get(),
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState ==
+                              ConnectionState.waiting) {
+                            return const SizedBox();
+                          }
+                          if (snapshot.hasData) {
+                            final userData =
+                                snapshot.data!.data() as Map<String, dynamic>;
+                            final userName = userData['name'];
+                            return Text('Dari: $userName');
+                          }
+                          return const SizedBox();
+                        },
+                      ),
+                    );
                   },
                 ),
-                // Additional information like timestamp can also be displayed here
-              );
-            },
-          ),
-          const SizedBox(height: 20),
-        ],
+              ),
+            ),
+            const SizedBox(height: 20),
+            Padding(
+              padding: const EdgeInsets.all(10.0),
+              child: TextField(
+                controller: _commentController,
+                decoration: const InputDecoration(
+                  labelText: 'Tambahkan Komentar',
+                ),
+              ),
+            ),
+            const SizedBox(height: 10),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(right: 30, bottom: 10),
+                  child: ElevatedButton(
+                    onPressed: _addComment,
+                    child: const Text('Posting komentar'),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
       );
     }
 
@@ -362,7 +400,7 @@ class _DetailScreenState extends State<DetailScreen> {
                   minimumSize: const Size(300, 50),
                   backgroundColor: Colors.blue,
                 ),
-                child: const Text('Contact Seller Now'),
+                child: const Text('Kontak Seller Sekarang'),
               ),
             ),
             const Padding(
@@ -380,7 +418,7 @@ class _DetailScreenState extends State<DetailScreen> {
               ),
             ),
             Padding(
-              padding: const EdgeInsets.all(8.0),
+              padding: const EdgeInsets.all(10.0),
               child:
                   widget.data.latitude != null && widget.data.longitude != null
                       ? SizedBox(
@@ -416,23 +454,11 @@ class _DetailScreenState extends State<DetailScreen> {
                 ],
               ),
             ),
-            // Comment Section
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  TextField(
-                    controller: _commentController,
-                    decoration: const InputDecoration(
-                      labelText: 'Add a comment',
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                  ElevatedButton(
-                    onPressed: _addComment,
-                    child: const Text('Post Comment'),
-                  ),
                   const SizedBox(height: 20),
                   _buildComments(),
                 ],

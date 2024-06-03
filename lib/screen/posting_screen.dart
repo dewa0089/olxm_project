@@ -47,7 +47,6 @@ class _PostingScreenState extends State<PostingScreen> {
               ? LatLng(widget.data!.latitude!, widget.data!.longitude!)
               : null;
     } else {
-      // Initialize harga to 0 when first opened
       _hargaController.text = currencyFormatter.format(0);
     }
   }
@@ -71,10 +70,7 @@ class _PostingScreenState extends State<PostingScreen> {
               LatLng(currentPosition.latitude, currentPosition.longitude);
         });
       } else {
-        // Handle the case when currentPosition is null
-        // For example, show an error message to the user
         showDialog(
-          // ignore: use_build_context_synchronously
           context: context,
           builder: (context) => AlertDialog(
             title: const Text('Error'),
@@ -91,9 +87,7 @@ class _PostingScreenState extends State<PostingScreen> {
         );
       }
     } catch (e) {
-      // Handle the error, for example, show an error message to the user
       showDialog(
-        // ignore: use_build_context_synchronously
         context: context,
         builder: (context) => AlertDialog(
           title: const Text('Error'),
@@ -113,20 +107,16 @@ class _PostingScreenState extends State<PostingScreen> {
 
   double? parseHarga(String harga) {
     try {
-      // Remove currency symbol and formatting before parsing
       String cleanedHarga = harga.replaceAll('Rp. ', '').replaceAll('.', '');
       return double.parse(cleanedHarga);
     } catch (e) {
-      // ignore: avoid_print
       print('Error parsing harga: $e');
       return null;
     }
   }
 
-  // Tambahkan Firebase Auth
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
-  // Metode untuk mendapatkan userId saat memposting
   Future<String?> _getUserId() async {
     User? user = _auth.currentUser;
     return user?.uid;
@@ -201,7 +191,6 @@ class _PostingScreenState extends State<PostingScreen> {
                   keyboardType: TextInputType.number,
                   inputFormatters: <TextInputFormatter>[
                     FilteringTextInputFormatter.digitsOnly,
-                    // Format input as user types
                     TextInputFormatter.withFunction(
                       (oldValue, newValue) {
                         final text = newValue.text;
@@ -224,11 +213,9 @@ class _PostingScreenState extends State<PostingScreen> {
                     border: OutlineInputBorder(),
                   ),
                   controller: _nomorController,
-                  keyboardType: TextInputType
-                      .phone, // Tipe keyboard untuk input nomor telepon
+                  keyboardType: TextInputType.phone,
                   inputFormatters: <TextInputFormatter>[
-                    FilteringTextInputFormatter
-                        .digitsOnly // Hanya menerima digit
+                    FilteringTextInputFormatter.digitsOnly
                   ],
                 ),
                 const SizedBox(height: 16),
@@ -275,8 +262,7 @@ class _PostingScreenState extends State<PostingScreen> {
                       ElevatedButton(
                         onPressed: _pickLocation,
                         style: ElevatedButton.styleFrom(
-                            minimumSize:
-                                const Size(400, 50), // Ukuran minimum tombol
+                            minimumSize: const Size(400, 50),
                             backgroundColor: Colors.blue),
                         child: const Text('Ambil Lokasi Saya'),
                       ),
@@ -287,7 +273,7 @@ class _PostingScreenState extends State<PostingScreen> {
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: SizedBox(
-                    height: 200, // Sesuaikan tinggi sesuai kebutuhan
+                    height: 200,
                     child: _selectedLocation != null
                         ? GoogleMap(
                             initialCameraPosition: CameraPosition(
@@ -322,7 +308,6 @@ class _PostingScreenState extends State<PostingScreen> {
                       }
                       double? harga = parseHarga(_hargaController.text);
                       if (harga == null) {
-                        // ignore: use_build_context_synchronously
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(
                             content: Text('Harga tidak valid'),
@@ -331,7 +316,6 @@ class _PostingScreenState extends State<PostingScreen> {
                         return;
                       }
 
-                      // Dapatkan userId saat memposting
                       String? userId = await _getUserId();
 
                       Data data = Data(
@@ -357,7 +341,6 @@ class _PostingScreenState extends State<PostingScreen> {
                       }
 
                       Navigator.push(
-                        // ignore: use_build_context_synchronously
                         context,
                         MaterialPageRoute(
                           builder: (context) => DetailScreen(

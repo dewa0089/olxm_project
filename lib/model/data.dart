@@ -29,7 +29,7 @@ class Data {
   final double? longitude;
   final Timestamp? createdAt;
   final Timestamp? updatedAt;
-  final String? userId; // Added userId
+  final String? userId;
 
   Data({
     this.id,
@@ -44,10 +44,9 @@ class Data {
     this.longitude,
     this.createdAt,
     this.updatedAt,
-    this.userId, // Initialize userId
+    this.userId,
   });
 
-  // Tambahkan userId ke metode fromMap dan toMap
   factory Data.fromMap(Map<String, dynamic> map) {
     return Data(
       id: map['id'] as String?,
@@ -80,7 +79,7 @@ class Data {
       'longitude': longitude,
       'created_at': createdAt,
       'updated_at': updatedAt,
-      'userId': userId, // Save userId
+      'userId': userId,
     };
   }
 }
@@ -88,12 +87,14 @@ class Data {
 class Comment {
   final String id;
   final String userId;
+  final String productId;
   final String text;
   final Timestamp createdAt;
 
   Comment({
     required this.id,
     required this.userId,
+    required this.productId,
     required this.text,
     required this.createdAt,
   });
@@ -102,6 +103,7 @@ class Comment {
     return Comment(
       id: id,
       userId: map['userId'] as String,
+      productId: map['productId'] as String,
       text: map['text'] as String,
       createdAt: (map['createdAt'] as Timestamp?) ?? Timestamp.now(),
     );

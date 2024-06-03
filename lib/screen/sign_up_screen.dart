@@ -45,16 +45,13 @@ class _SignUpScreenState extends State<SignUpScreen> {
         _imageFile = File(pickedFile.path);
       });
 
-      // Upload image to Firebase Storage
       try {
         TaskSnapshot snapshot = await FirebaseStorage.instance
             .ref('user_profile_images/${pickedFile.name}')
             .putFile(File(pickedFile.path));
 
-        // Get image URL from Firebase Storage
         String imageURL = await snapshot.ref.getDownloadURL();
 
-        // Set the imageURL to be saved in Firestore
         setState(() {
           _imageURL = imageURL;
         });
@@ -223,7 +220,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           password: _passwordController.text,
                         )
                             .then((userCredential) {
-                          // Store additional user data in Firestore
                           FirebaseFirestore.instance
                               .collection('users')
                               .doc(userCredential.user!.uid)
@@ -232,11 +228,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
                             'email': _emailController.text,
                             'password': _passwordController.text,
                             'dateOfBirth': _selectedDate,
-                            'image_url':
-                                _imageURL, // Save image URL to Firestore
+                            'image_url': _imageURL,
                           });
 
-                          // Navigate to MainScreen after successful signup
                           Navigator.pushReplacement(
                             context,
                             MaterialPageRoute(
