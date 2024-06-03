@@ -1,9 +1,11 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:olxm_project/model/data.dart';
 import 'package:olxm_project/screen/google_maps.dart';
 import 'package:olxm_project/screen/posting_screen.dart';
+import 'package:olxm_project/services/coment_services.dart';
 import 'package:olxm_project/services/data_services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -11,20 +13,25 @@ import 'package:url_launcher/url_launcher.dart';
 class DetailScreen extends StatefulWidget {
   final Data data;
 
-  const DetailScreen({super.key, required this.data});
+  const DetailScreen({Key? key, required this.data}) : super(key: key);
 
   @override
-  State<DetailScreen> createState() => _DetailScreenState();
+  _DetailScreenState createState() => _DetailScreenState();
 }
 
 class _DetailScreenState extends State<DetailScreen> {
   bool isFavorite = false;
   String? currentUserId;
+  final CommentService _commentService = CommentService();
+  final TextEditingController _commentController = TextEditingController();
+  List<Comment> _comments = [];
+
   @override
   void initState() {
     super.initState();
     _loadFavoriteStatus();
     _getCurrentUserId();
+    _loadComments();
   }
 
   Future<void> _getCurrentUserId() async {
@@ -69,12 +76,72 @@ class _DetailScreenState extends State<DetailScreen> {
     });
   }
 
+  Future<void> _loadComments() async {
+    _commentService.getComments().listen((comments) {
+      setState(() {
+        _comments = comments;
+      });
+    });
+  }
+
+  Future<void> _addComment() async {
+    final User? user = FirebaseAuth.instance.currentUser;
+    if (user != null && _commentController.text.isNotEmpty) {
+      await _commentService.addComment(user.uid, _commentController.text);
+      _commentController.clear();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final NumberFormat currencyFormatter =
         NumberFormat.currency(locale: 'id_ID', symbol: 'Rp ', decimalDigits: 0);
 
     final Uri whatsapp = Uri.parse('https://wa.me/62${widget.data.nomor}');
+
+    Widget _buildComments() {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const SizedBox(height: 20),
+          Text(
+            'Comments',
+            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: 10),
+          ListView.builder(
+            shrinkWrap: true,
+            itemCount: _comments.length,
+            itemBuilder: (context, index) {
+              final comment = _comments[index];
+              return ListTile(
+                title: Text(comment.text),
+                subtitle: FutureBuilder<DocumentSnapshot>(
+                  future: FirebaseFirestore.instance
+                      .collection('users')
+                      .doc(comment.userId)
+                      .get(),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return const SizedBox();
+                    }
+                    if (snapshot.hasData) {
+                      final userData =
+                          snapshot.data!.data() as Map<String, dynamic>;
+                      final userName = userData['name'];
+                      return Text('By: $userName');
+                    }
+                    return const SizedBox();
+                  },
+                ),
+                // Additional information like timestamp can also be displayed here
+              );
+            },
+          ),
+          const SizedBox(height: 20),
+        ],
+      );
+    }
 
     return Scaffold(
       body: SingleChildScrollView(
@@ -349,7 +416,28 @@ class _DetailScreenState extends State<DetailScreen> {
                 ],
               ),
             ),
-            // Add widget to display comments here
+            // Comment Section
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  TextField(
+                    controller: _commentController,
+                    decoration: const InputDecoration(
+                      labelText: 'Add a comment',
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  ElevatedButton(
+                    onPressed: _addComment,
+                    child: const Text('Post Comment'),
+                  ),
+                  const SizedBox(height: 20),
+                  _buildComments(),
+                ],
+              ),
+            ),
           ],
         ),
       ),

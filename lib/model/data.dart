@@ -84,3 +84,26 @@ class Data {
     };
   }
 }
+
+class Comment {
+  final String id;
+  final String userId;
+  final String text;
+  final Timestamp createdAt;
+
+  Comment({
+    required this.id,
+    required this.userId,
+    required this.text,
+    required this.createdAt,
+  });
+
+  factory Comment.fromMap(Map<String, dynamic> map, String id) {
+    return Comment(
+      id: id,
+      userId: map['userId'] as String,
+      text: map['text'] as String,
+      createdAt: (map['createdAt'] as Timestamp?) ?? Timestamp.now(),
+    );
+  }
+}
