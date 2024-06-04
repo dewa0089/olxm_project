@@ -346,7 +346,7 @@ class _DetailScreenState extends State<DetailScreen> {
             ),
             Padding(
               padding: const EdgeInsets.only(left: 8),
-              child: Row(
+              child: Stack(
                 children: [
                   Text(
                     'Alamat: ${widget.data.address}',
@@ -363,7 +363,7 @@ class _DetailScreenState extends State<DetailScreen> {
             ),
             const Padding(
               padding: EdgeInsets.only(left: 8),
-              child: Row(
+              child: Column(
                 children: [
                   Text(
                     'Deskripsi Penjualan:',
@@ -377,7 +377,7 @@ class _DetailScreenState extends State<DetailScreen> {
             ),
             Padding(
               padding: const EdgeInsets.only(left: 8),
-              child: Row(
+              child: Stack(
                 children: [
                   Text(
                     widget.data.description,
